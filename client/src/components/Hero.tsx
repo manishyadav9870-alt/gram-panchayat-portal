@@ -42,7 +42,7 @@ export default function Hero() {
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="text-center max-w-4xl mx-auto mb-12">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
-            {t('Welcome to Gram Panchayat', 'ग्रामपंचायत')}
+            {t('Welcome to Kishore Gram Panchayat', 'किशोर ग्रामपंचायत')}
           </h1>
           <h2 className="text-2xl md:text-3xl font-semibold text-primary mb-6">
             {t('Digital Services Portal', 'डिजिटल सेवा पोर्टल')}

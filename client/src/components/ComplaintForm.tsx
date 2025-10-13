@@ -9,6 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
+import { Download } from 'lucide-react';
+import { generateComplaintReceiptPDF } from '@/utils/pdfGenerator';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -24,6 +26,7 @@ export default function ComplaintForm() {
   const { t } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [formData, setFormData] = useState<FormData | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -40,7 +43,17 @@ export default function ComplaintForm() {
     console.log('Complaint submitted:', data);
     const tracking = `CMP${Date.now().toString().slice(-8)}`;
     setTrackingNumber(tracking);
+    setFormData(data);
     setSubmitted(true);
+  };
+
+  const handleDownloadPDF = () => {
+    if (formData && trackingNumber) {
+      generateComplaintReceiptPDF({
+        trackingNumber,
+        ...formData,
+      });
+    }
   };
 
   if (submitted) {
@@ -61,9 +74,15 @@ export default function ComplaintForm() {
           <p className="text-sm text-muted-foreground">
             {t('Please save this number to track your application.', 'कृपया हा क्रमांक जतन करा आणि आपल्या अर्जाचा मागोवा घ्या.')}
           </p>
-          <Button onClick={() => setSubmitted(false)} data-testid="button-submit-another">
-            {t('Submit Another Complaint', 'दुसरी तक्रार सबमिट करा')}
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={handleDownloadPDF} variant="default" data-testid="button-download-pdf">
+              <Download className="h-4 w-4 mr-2" />
+              {t('Download Receipt PDF', 'पावती PDF डाउनलोड करा')}
+            </Button>
+            <Button onClick={() => setSubmitted(false)} variant="outline" data-testid="button-submit-another">
+              {t('Submit Another Complaint', 'दुसरी तक्रार सबमिट करा')}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );

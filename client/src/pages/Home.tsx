@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
+import ImageCarousel from '@/components/ImageCarousel';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, Users, FileCheck } from 'lucide-react';
@@ -37,6 +38,12 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
+        
+        <section className="py-12">
+          <div className="container mx-auto px-4">
+            <ImageCarousel />
+          </div>
+        </section>
         
         <section className="py-16 bg-muted/30">
           <div className="container mx-auto px-4">
