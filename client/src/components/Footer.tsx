@@ -107,7 +107,7 @@ export default function Footer() {
 
         <div className="border-t mt-8 pt-6 text-center text-sm text-muted-foreground">
           <p>
-            © 2024 {t('Gram Panchayat. All rights reserved.', 'ग्रामपंचायत. सर्व हक्क राखीव.')}
+            © 2024 {t('Kishore Gram Panchayat. All rights reserved.', 'किशोर ग्रामपंचायत. सर्व हक्क राखीव.')}
           </p>
         </div>
       </div>

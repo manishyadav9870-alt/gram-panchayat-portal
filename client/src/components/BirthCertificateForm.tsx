@@ -7,6 +7,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
+import { Download } from 'lucide-react';
+import { generateBirthCertificatePDF } from '@/utils/pdfGenerator';
 
 const formSchema = z.object({
   childName: z.string().min(2, 'Child name is required'),
@@ -24,6 +26,7 @@ export default function BirthCertificateForm() {
   const { t } = useLanguage();
   const [submitted, setSubmitted] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [formData, setFormData] = useState<FormData | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -42,7 +45,17 @@ export default function BirthCertificateForm() {
     console.log('Birth certificate application submitted:', data);
     const tracking = `BRT${Date.now().toString().slice(-8)}`;
     setTrackingNumber(tracking);
+    setFormData(data);
     setSubmitted(true);
+  };
+
+  const handleDownloadPDF = () => {
+    if (formData && trackingNumber) {
+      generateBirthCertificatePDF({
+        trackingNumber,
+        ...formData,
+      });
+    }
   };
 
   if (submitted) {
@@ -63,9 +76,15 @@ export default function BirthCertificateForm() {
           <p className="text-sm text-muted-foreground">
             {t('Please save this number to track your application.', 'कृपया हा क्रमांक जतन करा आणि आपल्या अर्जाचा मागोवा घ्या.')}
           </p>
-          <Button onClick={() => setSubmitted(false)} data-testid="button-submit-another">
-            {t('Submit Another Application', 'दुसरा अर्ज सबमिट करा')}
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={handleDownloadPDF} variant="default" data-testid="button-download-pdf">
+              <Download className="h-4 w-4 mr-2" />
+              {t('Download PDF', 'PDF डाउनलोड करा')}
+            </Button>
+            <Button onClick={() => setSubmitted(false)} variant="outline" data-testid="button-submit-another">
+              {t('Submit Another Application', 'दुसरा अर्ज सबमिट करा')}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );

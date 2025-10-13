@@ -26,10 +26,10 @@ export default function Header() {
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-3 hover-elevate active-elevate-2 rounded-md px-3 py-2 -ml-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <span className="text-lg font-bold">ग्रा.प.</span>
+                <span className="text-lg font-bold">कि.ग्रा.प.</span>
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold">{t('Gram Panchayat', 'ग्रामपंचायत')}</h1>
+                <h1 className="text-lg font-bold">{t('Kishore Gram Panchayat', 'किशोर ग्रामपंचायत')}</h1>
                 <p className="text-xs text-muted-foreground">{t('Digital Services', 'डिजिटल सेवा')}</p>
               </div>
             </div>
