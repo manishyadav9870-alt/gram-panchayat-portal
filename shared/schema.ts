@@ -27,6 +27,8 @@ export const complaints = pgTable("complaints", {
   address: text("address").notNull(),
   category: text("category").notNull(),
   description: text("description").notNull(),
+  images: text("images").array(),
+  adminRemark: text("admin_remark"),
   status: text("status").notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

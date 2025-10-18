@@ -37,22 +37,10 @@ function Router() {
       <Route path="/track" component={TrackApplication} />
       <Route path="/records" component={Records} />
       
-      {/* Protected Service Routes - Require Login */}
-      <Route path="/services/complaint">
-        <ProtectedRoute>
-          <ComplaintService />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/services/birth-certificate">
-        <ProtectedRoute>
-          <BirthCertificateService />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/services/death-certificate">
-        <ProtectedRoute>
-          <DeathCertificateService />
-        </ProtectedRoute>
-      </Route>
+      {/* Public Service Routes - No Login Required */}
+      <Route path="/services/complaint" component={ComplaintService} />
+      <Route path="/services/birth-certificate" component={BirthCertificateService} />
+      <Route path="/services/death-certificate" component={DeathCertificateService} />
       
       {/* Admin Routes */}
       <Route path="/admin/login" component={AdminLogin} />
