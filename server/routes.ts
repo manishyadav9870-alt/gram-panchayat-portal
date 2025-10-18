@@ -160,13 +160,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/birth-certificates", async (req, res) => {
     try {
-      console.log('Received birth certificate data:', JSON.stringify(req.body, null, 2));
+      console.log('=== Birth Certificate Creation Request ===');
+      console.log('Received data:', JSON.stringify(req.body, null, 2));
+      
+      // Validate the data
       const validatedData = insertBirthCertificateSchema.parse(req.body);
+      console.log('Validated data:', JSON.stringify(validatedData, null, 2));
+      
+      // Create certificate
       const certificate = await storage.createBirthCertificate(validatedData);
+      console.log('Created certificate:', JSON.stringify(certificate, null, 2));
+      
       res.status(201).json(certificate);
     } catch (error: any) {
-      console.error('Validation error:', error);
-      res.status(400).json({ message: error.message || "Invalid birth certificate data", errors: error.errors });
+      console.error('=== Birth Certificate Creation Error ===');
+      console.error('Error:', error);
+      if (error.errors) {
+        console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+      }
+      res.status(400).json({ 
+        message: error.message || "Invalid birth certificate data", 
+        errors: error.errors || []
+      });
     }
   });
 
