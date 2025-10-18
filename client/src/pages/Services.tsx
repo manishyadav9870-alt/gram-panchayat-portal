@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users } from 'lucide-react';
+import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles } from 'lucide-react';
 
 export default function Services() {
   const { t } = useLanguage();
@@ -93,33 +93,53 @@ export default function Services() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 py-12">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-4">
-              {t('Our Services', 'आमच्या सेवा')}
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              {t(
-                'Access all government services online. Simple, fast, and transparent.',
-                'सर्व सरकारी सेवा ऑनलाइन मिळवा. सोपे, जलद आणि पारदर्शक.'
-              )}
-            </p>
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-chart-3/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
           </div>
+          
+          <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <div className="text-center mb-16 animate-slide-up">
+              <div className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg">
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
+                  {t('Digital Services', 'डिजिटल सेवा')}
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                {t('Our Services', 'आमच्या सेवा')}
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                {t(
+                  'Access all government services online. Simple, fast, and transparent.',
+                  'सर्व सरकारी सेवा ऑनलाइन मिळवा. सोपे, जलद आणि पारदर्शक.'
+                )}
+              </p>
+            </div>
+          </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <ServiceCard
-                key={index}
-                icon={service.icon}
-                title={t(service.titleEn, service.titleMr)}
-                description={t(service.descEn, service.descMr)}
-                path={service.path}
-                buttonText={t(service.buttonEn, service.buttonMr)}
-              />
-            ))}
+        {/* Services Grid */}
+        <section className="py-16 bg-gradient-to-b from-muted/20 to-background">
+          <div className="container mx-auto px-4 max-w-7xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {services.map((service, index) => (
+                <ServiceCard
+                  key={index}
+                  icon={service.icon}
+                  title={t(service.titleEn, service.titleMr)}
+                  description={t(service.descEn, service.descMr)}
+                  path={service.path}
+                  buttonText={t(service.buttonEn, service.buttonMr)}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
       </main>
       <Footer />
     </div>

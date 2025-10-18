@@ -39,12 +39,28 @@ export default function ComplaintForm() {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log('Complaint submitted:', data);
-    const tracking = `CMP${Date.now().toString().slice(-8)}`;
-    setTrackingNumber(tracking);
-    setFormData(data);
-    setSubmitted(true);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await fetch('/api/complaints', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit complaint');
+      }
+
+      const result = await response.json();
+      setTrackingNumber(result.trackingNumber);
+      setFormData(data);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting complaint:', error);
+      alert('Failed to submit complaint. Please try again.');
+    }
   };
 
   const handleDownloadPDF = () => {

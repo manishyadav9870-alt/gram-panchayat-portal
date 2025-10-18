@@ -1,0 +1,27 @@
+RewriteEngine On
+
+# Handle specific API routes with PHP fallback
+RewriteCond %{REQUEST_URI} ^/api/auth/login$
+RewriteRule ^api/auth/login$ /api-login.php [QSA,L]
+
+# Try Node.js backend first for other API routes
+RewriteCond %{REQUEST_URI} ^/api/(.*)$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/(.*)$ /index.js [QSA,L]
+
+# Handle Angular and React Router for non-API routes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)$ /index.html [QSA,L]
+
+# Security headers
+Header always set X-Content-Type-Options nosniff
+Header always set X-Frame-Options DENY
+Header always set X-XSS-Protection "1; mode=block"
+
+# Cache static assets
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg)$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+</FilesMatch>

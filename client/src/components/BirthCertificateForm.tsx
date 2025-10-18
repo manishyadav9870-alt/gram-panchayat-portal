@@ -41,12 +41,28 @@ export default function BirthCertificateForm() {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log('Birth certificate application submitted:', data);
-    const tracking = `BRT${Date.now().toString().slice(-8)}`;
-    setTrackingNumber(tracking);
-    setFormData(data);
-    setSubmitted(true);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await fetch('/api/birth-certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit birth certificate application');
+      }
+
+      const result = await response.json();
+      setTrackingNumber(result.trackingNumber);
+      setFormData(data);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting birth certificate application:', error);
+      alert('Failed to submit application. Please try again.');
+    }
   };
 
   const handleDownloadPDF = () => {

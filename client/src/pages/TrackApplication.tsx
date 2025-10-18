@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Calendar, User, FileText } from 'lucide-react';
+import { Search, Calendar, User, FileText, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
 export default function TrackApplication() {
@@ -53,49 +53,69 @@ export default function TrackApplication() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 py-12">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4">
-              {t('Track Application', 'अर्ज ट्रॅक करा')}
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              {t('Enter your tracking number to check application status', 'अर्जाची स्थिती तपासण्यासाठी आपला ट्रॅकिंग क्रमांक प्रविष्ट करा')}
-            </p>
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-chart-3/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
           </div>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>{t('Enter Tracking Number', 'ट्रॅकिंग क्रमांक टाका')}</CardTitle>
-              <CardDescription>
-                {t('You received this number when you submitted your application', 'तुम्ही अर्ज सबमिट केल्यावर हा क्रमांक मिळाला होता')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-2">
-                <Input
-                  placeholder={t('e.g., CMP12345678', 'उदा. CMP12345678')}
-                  value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
-                  data-testid="input-tracking-number"
-                />
-                <Button onClick={handleSearch} data-testid="button-search">
-                  <Search className="h-4 w-4 mr-2" />
-                  {t('Search', 'शोधा')}
-                </Button>
+          <div className="container mx-auto px-4 max-w-4xl relative z-10">
+            <div className="text-center mb-16 animate-slide-up">
+              <div className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg">
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
+                  {t('Application Status', 'अर्ज स्थिती')}
+                </span>
               </div>
-            </CardContent>
-          </Card>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                {t('Track Application', 'अर्ज ट्रॅक करा')}
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                {t('Enter your tracking number to check application status', 'अर्जाची स्थिती तपासण्यासाठी आपला ट्रॅकिंग क्रमांक प्रविष्ट करा')}
+              </p>
+            </div>
+          </div>
+        </section>
 
-          {result && (
-            <Card>
+        {/* Search Section */}
+        <section className="py-16 bg-gradient-to-b from-muted/20 to-background">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <Card className="mb-12 card-modern glass-card border-2 border-white/20 rounded-3xl">
               <CardHeader>
-                <div className="flex items-start justify-between gap-4">
-                  <CardTitle>{t('Application Details', 'अर्ज तपशील')}</CardTitle>
-                  <StatusBadge status={result.status} />
-                </div>
+                <CardTitle className="text-2xl font-bold">{t('Enter Tracking Number', 'ट्रॅकिंग क्रमांक टाका')}</CardTitle>
+                <CardDescription className="text-base">
+                  {t('You received this number when you submitted your application', 'तुम्ही अर्ज सबमिट केल्यावर हा क्रमांक मिळाला होता')}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Input
+                    placeholder={t('e.g., CMP12345678', 'उदा. CMP12345678')}
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    data-testid="input-tracking-number"
+                    className="text-lg py-6 rounded-xl"
+                  />
+                  <Button onClick={handleSearch} data-testid="button-search" size="lg" className="rounded-xl px-8">
+                    <Search className="h-5 w-5 mr-2" />
+                    {t('Search', 'शोधा')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {result && (
+              <Card className="card-modern glass-card border-2 border-white/20 rounded-3xl">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <CardTitle className="text-2xl font-bold">{t('Application Details', 'अर्ज तपशील')}</CardTitle>
+                    <StatusBadge status={result.status} />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
                 <div className="flex items-center gap-3">
                   <FileText className="h-5 w-5 text-muted-foreground" />
                   <div>
@@ -171,7 +191,8 @@ export default function TrackApplication() {
               </CardContent>
             </Card>
           )}
-        </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

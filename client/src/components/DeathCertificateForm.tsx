@@ -45,12 +45,28 @@ export default function DeathCertificateForm() {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log('Death certificate application submitted:', data);
-    const tracking = `DTH${Date.now().toString().slice(-8)}`;
-    setTrackingNumber(tracking);
-    setFormData(data);
-    setSubmitted(true);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await fetch('/api/death-certificates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit death certificate application');
+      }
+
+      const result = await response.json();
+      setTrackingNumber(result.trackingNumber);
+      setFormData(data);
+      setSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting death certificate application:', error);
+      alert('Failed to submit application. Please try again.');
+    }
   };
 
   const handleDownloadPDF = () => {
