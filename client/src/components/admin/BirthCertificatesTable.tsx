@@ -11,13 +11,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 interface BirthCertificate {
   id: string;
   trackingNumber: string;
-  childName: string;
+  childNameEn: string;
   dateOfBirth: string;
-  placeOfBirth: string;
-  fatherName: string;
-  motherName: string;
-  address: string;
-  contact: string;
+  placeOfBirthEn: string;
+  fatherNameEn: string;
+  motherNameEn: string;
+  permanentAddressEn: string;
+  motherAadhar: string;
   status: string;
   createdAt: string;
 }
@@ -51,13 +51,13 @@ export default function BirthCertificatesTable() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          childName: editing.childName,
+          childNameEn: editing.childNameEn,
           dateOfBirth: editing.dateOfBirth,
-          placeOfBirth: editing.placeOfBirth,
-          fatherName: editing.fatherName,
-          motherName: editing.motherName,
-          address: editing.address,
-          contact: editing.contact,
+          placeOfBirthEn: editing.placeOfBirthEn,
+          fatherNameEn: editing.fatherNameEn,
+          motherNameEn: editing.motherNameEn,
+          permanentAddressEn: editing.permanentAddressEn,
+          motherAadhar: editing.motherAadhar,
         }),
       });
       if (response.ok) {
@@ -123,10 +123,10 @@ export default function BirthCertificatesTable() {
               certificates.map((cert) => (
                 <TableRow key={cert.id}>
                   <TableCell className="font-mono text-sm">{cert.trackingNumber}</TableCell>
-                  <TableCell>{cert.childName}</TableCell>
+                  <TableCell>{cert.childNameEn}</TableCell>
                   <TableCell>{cert.dateOfBirth}</TableCell>
-                  <TableCell>{cert.fatherName}</TableCell>
-                  <TableCell>{cert.motherName}</TableCell>
+                  <TableCell>{cert.fatherNameEn}</TableCell>
+                  <TableCell>{cert.motherNameEn}</TableCell>
                   <TableCell>
                     <Select value={cert.status} onValueChange={(v) => handleStatusChange(cert.id, v)}>
                       <SelectTrigger className="w-32">
@@ -184,13 +184,13 @@ export default function BirthCertificatesTable() {
           </DialogHeader>
           {editing && (
             <div className="space-y-4">
-              <div><Label>Child Name</Label><Input value={editing.childName} onChange={(e) => setEditing({ ...editing, childName: e.target.value })} /></div>
+              <div><Label>Child Name</Label><Input value={editing.childNameEn} onChange={(e) => setEditing({ ...editing, childNameEn: e.target.value })} /></div>
               <div><Label>Date of Birth</Label><Input type="date" value={editing.dateOfBirth} onChange={(e) => setEditing({ ...editing, dateOfBirth: e.target.value })} /></div>
-              <div><Label>Place of Birth</Label><Input value={editing.placeOfBirth} onChange={(e) => setEditing({ ...editing, placeOfBirth: e.target.value })} /></div>
-              <div><Label>Father Name</Label><Input value={editing.fatherName} onChange={(e) => setEditing({ ...editing, fatherName: e.target.value })} /></div>
-              <div><Label>Mother Name</Label><Input value={editing.motherName} onChange={(e) => setEditing({ ...editing, motherName: e.target.value })} /></div>
-              <div><Label>Address</Label><Input value={editing.address} onChange={(e) => setEditing({ ...editing, address: e.target.value })} /></div>
-              <div><Label>Contact</Label><Input value={editing.contact} onChange={(e) => setEditing({ ...editing, contact: e.target.value })} /></div>
+              <div><Label>Place of Birth</Label><Input value={editing.placeOfBirthEn} onChange={(e) => setEditing({ ...editing, placeOfBirthEn: e.target.value })} /></div>
+              <div><Label>Father Name</Label><Input value={editing.fatherNameEn} onChange={(e) => setEditing({ ...editing, fatherNameEn: e.target.value })} /></div>
+              <div><Label>Mother Name</Label><Input value={editing.motherNameEn} onChange={(e) => setEditing({ ...editing, motherNameEn: e.target.value })} /></div>
+              <div><Label>Address</Label><Input value={editing.permanentAddressEn} onChange={(e) => setEditing({ ...editing, permanentAddressEn: e.target.value })} /></div>
+              <div><Label>Mother Aadhar</Label><Input value={editing.motherAadhar} onChange={(e) => setEditing({ ...editing, motherAadhar: e.target.value })} /></div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
                 <Button onClick={handleSave}>Save Changes</Button>

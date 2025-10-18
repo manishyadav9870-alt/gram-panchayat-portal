@@ -47,6 +47,11 @@ export default function AdminDashboard() {
 
   const [activeTab, setActiveTab] = useState('complaints');
 
+  // Debug: Log when activeTab changes
+  useEffect(() => {
+    console.log('Active tab changed to:', activeTab);
+  }, [activeTab]);
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -141,6 +146,11 @@ export default function AdminDashboard() {
 
         {/* Main Content */}
         <main className="flex-1 p-6 overflow-y-auto">
+          {/* Debug indicator */}
+          <div className="mb-4 p-2 bg-blue-100 text-blue-800 rounded text-sm">
+            Current Tab: <strong>{activeTab}</strong>
+          </div>
+          
           {activeTab === 'complaints' && (
             <Card>
               <CardHeader>
