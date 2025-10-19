@@ -52,15 +52,12 @@ export default function Hero() {
             <img 
               src={image} 
               alt={`Gram Panchayat ${index + 1}`}
-              className="w-full h-full object-cover scale-105 animate-slow-zoom"
-              style={{ filter: 'brightness(0.5)' }}
+              className="w-full h-full object-cover"
               onError={(e) => {
                 console.error(`Failed to load image: ${image}`);
                 e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070';
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-900/40 via-black/50 to-green-900/40"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
           </div>
         ))}
       </div>
@@ -97,68 +94,13 @@ export default function Hero() {
         ))}
       </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 h-full relative z-10 flex flex-col items-center justify-center text-center">
-        {/* Logo Badge */}
-        <div className="mb-8 animate-fade-in">
-          <div className="relative inline-block">
-            <div className="absolute inset-0 bg-orange-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-            <div className="relative w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/20">
-              <svg className="w-14 h-14 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-              </svg>
-            </div>
-          </div>
-        </div>
-        
-        {/* Main Heading */}
-        <div className="space-y-4 animate-slide-up">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
-            {t('Kishore Gram Panchayat', 'किशोर ग्रामपंचायत')}
-          </h1>
-          
-          <div className="inline-block bg-orange-500/20 backdrop-blur-md px-6 py-3 rounded-full border border-orange-500/30">
-            <p className="text-xl md:text-2xl text-orange-100 font-semibold">
-              {t('Village Information Service', 'गाव माहिती सेवा')}
-            </p>
-          </div>
-          
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto drop-shadow-lg mt-4">
-            {t('Access all government services online - Fast, Easy & Secure', 'सर्व सरकारी सेवा ऑनलाइन मिळवा - जलद, सोपे आणि सुरक्षित')}
-          </p>
-        </div>
-
-        {/* Image Counter */}
-        <div className="absolute bottom-24 right-8 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-          <p className="text-white text-sm font-semibold">
-            {currentImage + 1} / {images.length}
-          </p>
-        </div>
+      {/* Image Counter */}
+      <div className="absolute bottom-8 right-8 z-20 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+        <p className="text-white text-sm font-semibold">
+          {currentImage + 1} / {images.length}
+        </p>
       </div>
 
-      <style>{`
-        @keyframes slow-zoom {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-        }
-        .animate-slow-zoom {
-          animation: slow-zoom 20s ease-in-out infinite;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: scale(0.9); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out 0.2s both;
-        }
-      `}</style>
     </div>
   );
 }
