@@ -14,10 +14,16 @@ interface Complaint {
   id: string;
   trackingNumber: string;
   name: string;
+  nameMr?: string;
   contact: string;
   address: string;
+  addressMr?: string;
   category: string;
+  categoryMr?: string;
   description: string;
+  descriptionMr?: string;
+  images?: string[];
+  adminRemark?: string;
   status: string;
   createdAt: string;
 }

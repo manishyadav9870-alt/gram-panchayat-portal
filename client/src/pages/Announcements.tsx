@@ -54,7 +54,7 @@ export default function Announcements() {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
+        <section className="relative py-8 md:py-12 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 -left-20 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl animate-float"></div>
             <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
@@ -62,17 +62,17 @@ export default function Announcements() {
           </div>
 
           <div className="container mx-auto px-4 max-w-5xl relative z-10">
-            <div className="text-center mb-16 animate-slide-up">
-              <div className="inline-flex items-center gap-2 mb-6 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-orange-200/50 shadow-lg hover:shadow-xl transition-shadow">
+            <div className="text-center mb-8 animate-slide-up">
+              <div className="inline-flex items-center gap-2 mb-4 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-orange-200/50 shadow-lg hover:shadow-xl transition-shadow">
                 <Bell className="h-4 w-4 text-orange-600 animate-pulse" />
                 <span className="text-sm font-semibold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
                   {t('Latest Updates', 'ताजी माहिती')}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-orange-700 to-gray-900 bg-clip-text text-transparent">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-orange-800">
                 {t('Announcements', 'घोषणा')}
               </h1>
-              <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
+              <p className="text-base md:text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
                 {t('Stay updated with latest news and notices from Gram Panchayat', 'ग्रामपंचायतीच्या ताज्या बातम्या आणि सूचनांसह अद्यतनित रहा')}
               </p>
             </div>
@@ -83,69 +83,69 @@ export default function Announcements() {
         <section className="py-16 bg-gradient-to-b from-white to-gray-50/50">
           <div className="container mx-auto px-4 max-w-6xl">
             {/* Stats Bar */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-3 rounded-xl">
-                    <Megaphone className="h-6 w-6" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-4 text-white shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white/20 p-2 rounded-lg">
+                    <Megaphone className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm opacity-90">{t('Total Announcements', 'एकूण घोषणा')}</p>
-                    <p className="text-2xl font-bold">{announcements.length}</p>
+                    <p className="text-xs opacity-90">{t('Total Announcements', 'एकूण घोषणा')}</p>
+                    <p className="text-xl font-bold">{announcements.length}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-3 rounded-xl">
-                    <TrendingUp className="h-6 w-6" />
+              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-4 text-white shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white/20 p-2 rounded-lg">
+                    <TrendingUp className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm opacity-90">{t('Important', 'महत्वाचे')}</p>
-                    <p className="text-2xl font-bold">{announcements.filter(a => a.priority === 'high').length}</p>
+                    <p className="text-xs opacity-90">{t('Important', 'महत्वाचे')}</p>
+                    <p className="text-xl font-bold">{announcements.filter(a => a.priority === 'high').length}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/20 p-3 rounded-xl">
-                    <Filter className="h-6 w-6" />
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-md hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white/20 p-2 rounded-lg">
+                    <Filter className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm opacity-90">{t('Showing', 'दाखवत आहे')}</p>
-                    <p className="text-2xl font-bold">{filteredAnnouncements.length}</p>
+                    <p className="text-xs opacity-90">{t('Showing', 'दाखवत आहे')}</p>
+                    <p className="text-xl font-bold">{filteredAnnouncements.length}</p>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Filter Buttons */}
-            <div className="flex flex-wrap gap-3 mb-8">
+            <div className="flex flex-wrap gap-2 mb-8">
               <Button 
                 variant={filter === 'all' ? 'default' : 'outline'} 
-                size="lg"
+                size="sm"
                 onClick={() => setFilter('all')}
                 data-testid="button-filter-all"
-                className="rounded-xl"
+                className="rounded-lg"
               >
                 <Filter className="h-4 w-4 mr-2" />
                 {t('All', 'सर्व')}
               </Button>
               <Button 
                 variant={filter === 'high' ? 'default' : 'outline'} 
-                size="lg"
+                size="sm"
                 onClick={() => setFilter('high')}
                 data-testid="button-filter-important"
-                className="rounded-xl"
+                className="rounded-lg"
               >
                 {t('Important', 'महत्वाचे')}
               </Button>
               <Button 
                 variant={filter === 'normal' ? 'default' : 'outline'} 
-                size="lg"
+                size="sm"
                 onClick={() => setFilter('normal')}
                 data-testid="button-filter-normal"
-                className="rounded-xl"
+                className="rounded-lg"
               >
                 {t('General', 'सामान्य')}
               </Button>

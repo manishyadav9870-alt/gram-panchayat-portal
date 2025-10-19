@@ -9,13 +9,15 @@ interface ServiceCardProps {
   description: string;
   path: string;
   buttonText: string;
+  adminOnly?: boolean;
 }
 
-export default function ServiceCard({ icon: Icon, title, description, path, buttonText }: ServiceCardProps) {
+export default function ServiceCard({ icon: Icon, title, description, path, buttonText, adminOnly = false }: ServiceCardProps) {
   const isComingSoon = path === '#' || buttonText.includes('Coming Soon') || buttonText.includes('लवकरच');
+  const isDisabled = isComingSoon || adminOnly;
   
   return (
-    <Card className={`flex flex-col h-full bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-3xl overflow-hidden group relative transition-all duration-500 ${isComingSoon ? 'opacity-60 cursor-not-allowed' : 'hover:border-primary/30 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:-translate-y-2'}`}>
+    <Card className={`flex flex-col h-full bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-3xl overflow-hidden group relative transition-all duration-500 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-primary/30 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:-translate-y-2'}`}>
       {/* Gradient Border Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-chart-3/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-chart-3/20 rounded-3xl opacity-0 group-hover:opacity-100 blur-sm transition-opacity duration-500 -z-10"></div>
@@ -35,7 +37,7 @@ export default function ServiceCard({ icon: Icon, title, description, path, butt
       </CardContent>
       
       <CardFooter className="relative z-10 pt-4 pb-6 px-6">
-        {isComingSoon ? (
+        {isDisabled ? (
           <Button disabled className="w-full bg-gray-400 text-white rounded-xl shadow-md font-semibold border-0 cursor-not-allowed">
             {buttonText}
           </Button>

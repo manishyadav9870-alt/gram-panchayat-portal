@@ -9,15 +9,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
-import { Download, Upload, X } from 'lucide-react';
-import { generateComplaintReceiptPDF } from '@/utils/pdfGenerator';
+import { Upload, X, Printer } from 'lucide-react';
+import { printComplaintReceipt } from '@/utils/pdfGenerator';
+import { transliterateToMarathi } from '@/lib/transliterate';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
+  nameMr: z.string().optional(),
   contact: z.string().min(10, 'Contact must be at least 10 digits'),
   address: z.string().min(5, 'Address must be at least 5 characters'),
+  addressMr: z.string().optional(),
   category: z.string().min(1, 'Please select a category'),
+  categoryMr: z.string().optional(),
   description: z.string().min(10, 'Description must be at least 10 characters'),
+  descriptionMr: z.string().optional(),
   images: z.array(z.string()).optional(),
 });
 
@@ -34,12 +39,34 @@ export default function ComplaintForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      nameMr: '',
       contact: '',
       address: '',
+      addressMr: '',
       category: '',
+      categoryMr: '',
       description: '',
+      descriptionMr: '',
     },
   });
+
+  // Helper function to detect if text is in Marathi
+  const isMarathiText = (text: string): boolean => {
+    const marathiPattern = /[\u0900-\u097F]/;
+    return marathiPattern.test(text);
+  };
+
+  // Helper function to translate category to Marathi
+  const getCategoryMarathi = (category: string): string => {
+    const categoryMap: { [key: string]: string } = {
+      'water': 'पाणी पुरवठा',
+      'electricity': 'वीज',
+      'roads': 'रस्ते',
+      'drainage': 'गटार',
+      'other': 'इतर'
+    };
+    return categoryMap[category] || category;
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -60,10 +87,43 @@ export default function ComplaintForm() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const complaintData = {
-        ...data,
-        images: uploadedImages,
-      };
+      // Detect language and auto-translate if needed
+      let complaintData = { ...data, images: uploadedImages };
+
+      // If user typed in English, translate to Marathi for display
+      if (!isMarathiText(data.name)) {
+        try {
+          complaintData.nameMr = await transliterateToMarathi(data.name);
+        } catch (e) {
+          console.error('Name transliteration failed:', e);
+        }
+      } else {
+        // If typed in Marathi, store as Marathi
+        complaintData.nameMr = data.name;
+      }
+
+      if (!isMarathiText(data.address)) {
+        try {
+          complaintData.addressMr = await transliterateToMarathi(data.address);
+        } catch (e) {
+          console.error('Address transliteration failed:', e);
+        }
+      } else {
+        complaintData.addressMr = data.address;
+      }
+
+      if (!isMarathiText(data.description)) {
+        try {
+          complaintData.descriptionMr = await transliterateToMarathi(data.description);
+        } catch (e) {
+          console.error('Description transliteration failed:', e);
+        }
+      } else {
+        complaintData.descriptionMr = data.description;
+      }
+
+      // Always translate category to Marathi
+      complaintData.categoryMr = getCategoryMarathi(data.category);
 
       console.log('Submitting complaint data:', {
         ...complaintData,
@@ -90,7 +150,7 @@ export default function ComplaintForm() {
       const result = await response.json();
       console.log('Success result:', result);
       setTrackingNumber(result.trackingNumber);
-      setFormData(data);
+      setFormData(complaintData);
       setSubmitted(true);
     } catch (error) {
       console.error('Error submitting complaint:', error);
@@ -98,9 +158,9 @@ export default function ComplaintForm() {
     }
   };
 
-  const handleDownloadPDF = () => {
+  const handlePrint = () => {
     if (formData && trackingNumber) {
-      generateComplaintReceiptPDF({
+      printComplaintReceipt({
         trackingNumber,
         ...formData,
       });
@@ -125,10 +185,10 @@ export default function ComplaintForm() {
           <p className="text-sm text-muted-foreground">
             {t('Please save this number to track your application.', 'कृपया हा क्रमांक जतन करा आणि आपल्या अर्जाचा मागोवा घ्या.')}
           </p>
-          <div className="flex gap-3">
-            <Button onClick={handleDownloadPDF} variant="default" data-testid="button-download-pdf">
-              <Download className="h-4 w-4 mr-2" />
-              {t('Download Receipt PDF', 'पावती PDF डाउनलोड करा')}
+          <div className="flex gap-3 flex-wrap">
+            <Button onClick={handlePrint} variant="default" data-testid="button-print-receipt">
+              <Printer className="h-4 w-4 mr-2" />
+              {t('Print Receipt', 'पावती प्रिंट करा')}
             </Button>
             <Button onClick={() => setSubmitted(false)} variant="outline" data-testid="button-submit-another">
               {t('Submit Another Complaint', 'दुसरी तक्रार सबमिट करा')}

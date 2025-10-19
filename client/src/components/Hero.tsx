@@ -113,10 +113,8 @@ export default function Hero() {
         
         {/* Main Heading */}
         <div className="space-y-4 animate-slide-up">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-2xl">
-            <span className="bg-gradient-to-r from-white via-orange-100 to-white bg-clip-text text-transparent">
-              {t('Kishore Gram Panchayat', 'किशोर ग्रामपंचायत')}
-            </span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+            {t('Kishore Gram Panchayat', 'किशोर ग्रामपंचायत')}
           </h1>
           
           <div className="inline-block bg-orange-500/20 backdrop-blur-md px-6 py-3 rounded-full border border-orange-500/30">

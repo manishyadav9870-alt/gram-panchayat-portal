@@ -317,58 +317,279 @@ export function generateDeathCertificatePDF(data: {
 export function generateComplaintReceiptPDF(data: {
   trackingNumber: string;
   name: string;
+  nameMr?: string;
   contact: string;
   address: string;
+  addressMr?: string;
   category: string;
+  categoryMr?: string;
   description: string;
+  descriptionMr?: string;
 }) {
   const doc = new jsPDF();
   
   doc.setFont('helvetica');
   
-  // Header
+  // Header - Bilingual
   doc.setFontSize(20);
   doc.text('Kishore Gram Panchayat', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.text('किशोर ग्राम पंचायत', 105, 28, { align: 'center' });
   doc.setFontSize(14);
-  doc.text('Complaint Receipt', 105, 35, { align: 'center' });
+  doc.text('Complaint Receipt / तक्रार पावती', 105, 42, { align: 'center' });
   
   // Tracking Number - prominent
   doc.setFontSize(16);
-  doc.text(`Tracking No.: ${data.trackingNumber}`, 105, 55, { align: 'center' });
+  doc.text(`Tracking No. / ट्रॅकिंग क्रमांक: ${data.trackingNumber}`, 105, 62, { align: 'center' });
   
-  // Content
+  // Content - Display in Marathi if available, otherwise English
   doc.setFontSize(12);
-  let y = 75;
+  let y = 82;
   
-  doc.text(`Complainant Name: ${data.name}`, 20, y);
+  // Name - Show Marathi version in print
+  const displayName = data.nameMr || data.name;
+  doc.text(`नाव / Name: ${displayName}`, 20, y);
   y += 10;
-  doc.text(`Contact: ${data.contact}`, 20, y);
+  
+  doc.text(`संपर्क / Contact: ${data.contact}`, 20, y);
   y += 10;
-  doc.text(`Address: ${data.address}`, 20, y);
-  y += 10;
-  doc.text(`Category: ${data.category}`, 20, y);
+  
+  // Address - Show Marathi version in print
+  const displayAddress = data.addressMr || data.address;
+  const splitAddress = doc.splitTextToSize(displayAddress, 170);
+  doc.text('पत्ता / Address:', 20, y);
+  y += 7;
+  doc.text(splitAddress, 20, y);
+  y += splitAddress.length * 7 + 5;
+  
+  // Category - Show Marathi version in print
+  const displayCategory = data.categoryMr || data.category;
+  doc.text(`प्रकार / Category: ${displayCategory}`, 20, y);
   y += 15;
-  doc.text('Complaint Details:', 20, y);
+  
+  doc.text('तक्रार तपशील / Complaint Details:', 20, y);
   y += 10;
   
-  // Wrap description text
-  const splitDescription = doc.splitTextToSize(data.description, 170);
+  // Description - Show Marathi version in print
+  const displayDescription = data.descriptionMr || data.description;
+  const splitDescription = doc.splitTextToSize(displayDescription, 170);
   doc.text(splitDescription, 20, y);
   y += splitDescription.length * 7 + 15;
   
   // Registration date
-  doc.text(`Registration Date: ${new Date().toLocaleDateString('en-GB')}`, 20, y);
+  doc.text(`नोंदणी तारीख / Registration Date: ${new Date().toLocaleDateString('en-GB')}`, 20, y);
   y += 10;
-  doc.text(`Status: Pending`, 20, y);
+  doc.text(`स्थिती / Status: प्रलंबित / Pending`, 20, y);
   
-  // Footer
+  // Footer - Bilingual
   y += 20;
   doc.setFontSize(10);
+  doc.text('कृपया आपल्या तक्रारीचा मागोवा घेण्यासाठी हा क्रमांक जतन करा', 105, y, { align: 'center' });
+  y += 6;
   doc.text('Please save this number to track your complaint', 105, y, { align: 'center' });
   
   y += 15;
-  doc.text('Kishore Gram Panchayat Office', 105, y, { align: 'center' });
+  doc.text('किशोर ग्राम पंचायत कार्यालय / Kishore Gram Panchayat Office', 105, y, { align: 'center' });
   
   // Save the PDF
   doc.save(`Complaint_Receipt_${data.trackingNumber}.pdf`);
+}
+
+// Print function for complaint receipt (opens print dialog with Marathi text)
+export function printComplaintReceipt(data: {
+  trackingNumber: string;
+  name: string;
+  nameMr?: string;
+  contact: string;
+  address: string;
+  addressMr?: string;
+  category: string;
+  categoryMr?: string;
+  description: string;
+  descriptionMr?: string;
+}) {
+  // Create a print-friendly HTML window
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('Please allow popups to print the receipt');
+    return;
+  }
+
+  // Display Marathi text in print if available
+  const displayName = data.nameMr || data.name;
+  const displayAddress = data.addressMr || data.address;
+  const displayCategory = data.categoryMr || data.category;
+  const displayDescription = data.descriptionMr || data.description;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>तक्रार पावती / Complaint Receipt - ${data.trackingNumber}</title>
+      <style>
+        @media print {
+          body { margin: 0; }
+          .no-print { display: none; }
+        }
+        body {
+          font-family: 'Noto Sans Devanagari', Arial, sans-serif;
+          padding: 40px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 3px solid #333;
+          padding-bottom: 20px;
+          margin-bottom: 30px;
+        }
+        .header h1 {
+          margin: 5px 0;
+          font-size: 28px;
+          color: #2c5282;
+        }
+        .header h2 {
+          margin: 5px 0;
+          font-size: 22px;
+          color: #2c5282;
+        }
+        .header h3 {
+          margin: 10px 0;
+          font-size: 18px;
+          color: #555;
+        }
+        .tracking {
+          text-align: center;
+          background: #f7fafc;
+          padding: 15px;
+          margin: 20px 0;
+          border: 2px solid #2c5282;
+          border-radius: 8px;
+        }
+        .tracking-number {
+          font-size: 24px;
+          font-weight: bold;
+          color: #2c5282;
+          margin: 5px 0;
+        }
+        .content {
+          margin: 20px 0;
+        }
+        .field {
+          margin: 15px 0;
+          padding: 10px;
+          background: #f9f9f9;
+          border-left: 4px solid #2c5282;
+        }
+        .field-label {
+          font-weight: bold;
+          color: #2c5282;
+          margin-bottom: 5px;
+        }
+        .field-value {
+          color: #333;
+          line-height: 1.6;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 2px solid #333;
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+        }
+        .button-container {
+          text-align: center;
+          margin: 20px 0;
+        }
+        button {
+          background: #2c5282;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          font-size: 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          margin: 0 10px;
+        }
+        button:hover {
+          background: #1a365d;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>Kishore Gram Panchayat</h1>
+        <h2>किशोर ग्राम पंचायत</h2>
+        <h3>Complaint Receipt / तक्रार पावती</h3>
+      </div>
+
+      <div class="tracking">
+        <div style="font-size: 16px; margin-bottom: 5px;">ट्रॅकिंग क्रमांक / Tracking Number</div>
+        <div class="tracking-number">${data.trackingNumber}</div>
+      </div>
+
+      <div class="content">
+        <div class="field">
+          <div class="field-label">नाव / Name</div>
+          <div class="field-value">${displayName}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">संपर्क / Contact</div>
+          <div class="field-value">${data.contact}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">पत्ता / Address</div>
+          <div class="field-value">${displayAddress}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">प्रकार / Category</div>
+          <div class="field-value">${displayCategory}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">तक्रार तपशील / Complaint Details</div>
+          <div class="field-value">${displayDescription}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">नोंदणी तारीख / Registration Date</div>
+          <div class="field-value">${new Date().toLocaleDateString('en-GB')}</div>
+        </div>
+
+        <div class="field">
+          <div class="field-label">स्थिती / Status</div>
+          <div class="field-value">प्रलंबित / Pending</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p><strong>कृपया आपल्या तक्रारीचा मागोवा घेण्यासाठी हा क्रमांक जतन करा</strong></p>
+        <p>Please save this number to track your complaint</p>
+        <p style="margin-top: 15px;">किशोर ग्राम पंचायत कार्यालय / Kishore Gram Panchayat Office</p>
+      </div>
+
+      <div class="button-container no-print">
+        <button onclick="window.print()">🖨️ प्रिंट करा / Print</button>
+        <button onclick="window.close()">बंद करा / Close</button>
+      </div>
+
+      <script>
+        // Auto-print when page loads
+        window.onload = function() {
+          setTimeout(function() {
+            window.print();
+          }, 500);
+        };
+      </script>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
 }

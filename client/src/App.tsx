@@ -45,8 +45,18 @@ function Router() {
       
       {/* Public Service Routes - No Login Required */}
       <Route path="/services/complaint" component={ComplaintService} />
-      <Route path="/services/birth-certificate" component={BirthCertificateService} />
-      <Route path="/services/death-certificate" component={DeathCertificateService} />
+      
+      {/* Birth & Death Certificate - Admin Only */}
+      <Route path="/services/birth-certificate">
+        <ProtectedRoute>
+          <BirthCertificateService />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/services/death-certificate">
+        <ProtectedRoute>
+          <DeathCertificateService />
+        </ProtectedRoute>
+      </Route>
       
       {/* Admin Routes */}
       <Route path="/admin/login" component={AdminLogin} />

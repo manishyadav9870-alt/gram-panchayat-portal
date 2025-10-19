@@ -82,12 +82,22 @@ export default function Home() {
       iconColor: 'text-green-600'
     },
     {
+      icon: Users,
+      titleEn: 'Leaving Certificate',
+      titleMr: 'रहिवासी दाखला',
+      path: '/admin/leaving-certificate/new',
+      color: 'bg-yellow-100',
+      iconColor: 'text-yellow-600',
+      adminOnly: true
+    },
+    {
       icon: Heart,
       titleEn: 'Birth Certificate',
       titleMr: 'जन्म दाखला',
       path: '/services/birth-certificate',
       color: 'bg-orange-100',
-      iconColor: 'text-orange-600'
+      iconColor: 'text-orange-600',
+      adminOnly: true
     },
     {
       icon: FileText,
@@ -95,15 +105,8 @@ export default function Home() {
       titleMr: 'मृत्यू दाखला',
       path: '/services/death-certificate',
       color: 'bg-cyan-100',
-      iconColor: 'text-cyan-600'
-    },
-    {
-      icon: Users,
-      titleEn: 'Ration Card',
-      titleMr: 'रेशन कार्ड',
-      path: '/services/ration-card',
-      color: 'bg-yellow-100',
-      iconColor: 'text-yellow-600'
+      iconColor: 'text-cyan-600',
+      adminOnly: true
     },
   ];
 
@@ -156,6 +159,26 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {services.map((service, index) => {
                 const Icon = service.icon;
+                const isDisabled = service.adminOnly;
+                
+                if (isDisabled) {
+                  return (
+                    <Card key={index} className="bg-white border-2 border-gray-200/60 transition-all duration-500 h-full rounded-3xl opacity-60 cursor-not-allowed">
+                      <CardContent className="p-8 text-center">
+                        <div className={`w-24 h-24 ${service.color} rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg`}>
+                          <Icon className={`h-12 w-12 ${service.iconColor}`} />
+                        </div>
+                        <h3 className="font-bold text-xl mb-4 text-gray-900">
+                          {t(service.titleEn, service.titleMr)}
+                        </h3>
+                        <Button disabled className="bg-gray-400 text-white w-full rounded-xl shadow-md font-semibold cursor-not-allowed">
+                          {t('Admin Only', 'केवळ प्रशासक')}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+                
                 return (
                   <Link key={index} href={service.path}>
                     <Card className="bg-white border-2 border-gray-200/60 hover:border-orange-400 hover:shadow-2xl transition-all duration-500 cursor-pointer h-full rounded-3xl hover:-translate-y-2 group">
