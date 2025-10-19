@@ -12,7 +12,3 @@ cmd = "npm start"
 
 [variables]
 NODE_ENV = "production"
-
-[staticAssets]
-"/server" = "server"
-"/shared" = "shared"
