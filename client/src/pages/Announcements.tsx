@@ -3,52 +3,47 @@ import Footer from '@/components/Footer';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Filter, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { Filter, Sparkles, Megaphone, TrendingUp, Bell } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+interface Announcement {
+  id: string;
+  title: string;
+  titleMr: string;
+  description: string;
+  descriptionMr: string;
+  category: string;
+  priority: string;
+  date: string;
+  createdAt: string;
+}
 
 export default function Announcements() {
   const { t } = useLanguage();
   const [filter, setFilter] = useState<string>('all');
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  //todo: remove mock functionality
-  const announcements = [
-    {
-      title: 'Property Tax Payment Deadline Extended',
-      titleMr: 'मालमत्ता कर भरण्याची अंतिम मुदत वाढवली',
-      description: 'The deadline for property tax payment has been extended to March 31st, 2024. Citizens can now pay their taxes without any late fees until this date. Online payment facility is also available through our portal.',
-      descriptionMr: 'मालमत्ता कर भरण्याची अंतिम मुदत ३१ मार्च २०२४ पर्यंत वाढवण्यात आली आहे. नागरिक या तारखेपर्यंत कोणत्याही विलंब शुल्काशिवाय त्यांचे कर भरू शकतात. आमच्या पोर्टलद्वारे ऑनलाइन पेमेंटची सुविधा देखील उपलब्ध आहे.',
-      category: 'Tax',
-      priority: 'high' as const,
-      date: '2024-02-15',
-    },
-    {
-      title: 'Free Vaccination Drive Next Week',
-      titleMr: 'पुढील आठवड्यात मोफत लसीकरण मोहीम',
-      description: 'A free vaccination drive will be conducted at the village community center from February 20-22, 2024. All children below 5 years and senior citizens above 60 are requested to participate.',
-      descriptionMr: 'गाव समुदाय केंद्रावर २० ते २२ फेब्रुवारी २०२४ या कालावधीत मोफत लसीकरण मोहीम राबविली जाईल. ५ वर्षाखालील सर्व मुले आणि ६० वर्षांवरील ज्येष्ठ नागरिकांना सहभागी होण्याची विनंती.',
-      category: 'Health',
-      priority: 'normal' as const,
-      date: '2024-02-10',
-    },
-    {
-      title: 'New Water Supply Scheme Launched',
-      titleMr: 'नवीन पाणी पुरवठा योजना सुरू',
-      description: 'The Gram Panchayat has launched a new water supply scheme to ensure 24/7 clean drinking water to all households. Installation work will begin from next month.',
-      descriptionMr: 'ग्रामपंचायतीने सर्व घरांना २४/७ स्वच्छ पिण्याचे पाणी सुनिश्चित करण्यासाठी नवीन पाणी पुरवठा योजना सुरू केली आहे. पुढील महिन्यापासून बसवणुकीचे काम सुरू होईल.',
-      category: 'Infrastructure',
-      priority: 'high' as const,
-      date: '2024-02-08',
-    },
-    {
-      title: 'Skill Development Training Program',
-      titleMr: 'कौशल्य विकास प्रशिक्षण कार्यक्रम',
-      description: 'Free skill development training in tailoring, computer basics, and mobile repairing will be conducted for unemployed youth. Registration starts from February 25th.',
-      descriptionMr: 'बेरोजगार तरुणांसाठी शिवणकाम, संगणक मूलभूत आणि मोबाईल दुरुस्ती यामध्ये मोफत कौशल्य विकास प्रशिक्षण दिले जाईल. नोंदणी २५ फेब्रुवारीपासून सुरू होईल.',
-      category: 'Employment',
-      priority: 'normal' as const,
-      date: '2024-02-05',
-    },
-  ];
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch('/api/announcements');
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched announcements:', data);
+        setAnnouncements(data);
+      } else {
+        console.error('Failed to fetch announcements:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredAnnouncements = filter === 'all' 
     ? announcements 
@@ -59,25 +54,25 @@ export default function Announcements() {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background">
+        <section className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-chart-3/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <div className="absolute top-20 -left-20 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-100/20 to-transparent rounded-full blur-3xl"></div>
           </div>
 
           <div className="container mx-auto px-4 max-w-5xl relative z-10">
             <div className="text-center mb-16 animate-slide-up">
-              <div className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
+              <div className="inline-flex items-center gap-2 mb-6 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-orange-200/50 shadow-lg hover:shadow-xl transition-shadow">
+                <Bell className="h-4 w-4 text-orange-600 animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
                   {t('Latest Updates', 'ताजी माहिती')}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-orange-700 to-gray-900 bg-clip-text text-transparent">
                 {t('Announcements', 'घोषणा')}
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
                 {t('Stay updated with latest news and notices from Gram Panchayat', 'ग्रामपंचायतीच्या ताज्या बातम्या आणि सूचनांसह अद्यतनित रहा')}
               </p>
             </div>
@@ -85,8 +80,46 @@ export default function Announcements() {
         </section>
 
         {/* Announcements Section */}
-        <section className="py-16 bg-gradient-to-b from-muted/20 to-background">
-          <div className="container mx-auto px-4 max-w-5xl">
+        <section className="py-16 bg-gradient-to-b from-white to-gray-50/50">
+          <div className="container mx-auto px-4 max-w-6xl">
+            {/* Stats Bar */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <Megaphone className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-90">{t('Total Announcements', 'एकूण घोषणा')}</p>
+                    <p className="text-2xl font-bold">{announcements.length}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <TrendingUp className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-90">{t('Important', 'महत्वाचे')}</p>
+                    <p className="text-2xl font-bold">{announcements.filter(a => a.priority === 'high').length}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-3 rounded-xl">
+                    <Filter className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm opacity-90">{t('Showing', 'दाखवत आहे')}</p>
+                    <p className="text-2xl font-bold">{filteredAnnouncements.length}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Filter Buttons */}
             <div className="flex flex-wrap gap-3 mb-8">
               <Button 
                 variant={filter === 'all' ? 'default' : 'outline'} 
@@ -119,9 +152,28 @@ export default function Announcements() {
             </div>
 
             <div className="space-y-6">
-              {filteredAnnouncements.map((announcement, index) => (
-                <AnnouncementCard key={index} {...announcement} />
-              ))}
+              {loading ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">{t('Loading announcements...', 'घोषणा लोड होत आहेत...')}</p>
+                </div>
+              ) : filteredAnnouncements.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">{t('No announcements found', 'कोणत्याही घोषणा सापडल्या नाहीत')}</p>
+                </div>
+              ) : (
+                filteredAnnouncements.map((announcement, index) => (
+                  <AnnouncementCard 
+                    key={announcement.id || index} 
+                    title={announcement.title}
+                    titleMr={announcement.titleMr}
+                    description={announcement.description}
+                    descriptionMr={announcement.descriptionMr}
+                    category={announcement.category}
+                    priority={announcement.priority as 'high' | 'normal' | 'low' | 'urgent'}
+                    date={announcement.date}
+                  />
+                ))
+              )}
             </div>
           </div>
         </section>

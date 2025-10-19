@@ -9,17 +9,23 @@ import {
   type InsertDeathCertificate,
   type Announcement,
   type InsertAnnouncement,
+  type LeavingCertificate,
+  type InsertLeavingCertificate,
+  type MarriageCertificate,
+  type InsertMarriageCertificate,
   users,
   complaints,
   birthCertificates,
   deathCertificates,
-  announcements
+  announcements,
+  leavingCertificates,
+  marriageCertificates
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pkg from 'pg';
 const { Pool } = pkg;
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -146,6 +152,8 @@ export class MemStorage implements IStorage {
       id,
       trackingNumber,
       status: "pending",
+      adminRemark: null,
+      images: insertComplaint.images || null,
       createdAt: new Date(),
     };
     this.complaints.set(id, complaint);
@@ -535,6 +543,45 @@ export class DbStorage implements IStorage {
 
   async deleteAnnouncement(id: string): Promise<boolean> {
     const result = await this.db.delete(announcements).where(eq(announcements.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async createLeavingCertificate(insertLeavingCertificate: InsertLeavingCertificate): Promise<LeavingCertificate> {
+    const result = await this.db.insert(leavingCertificates).values(insertLeavingCertificate).returning();
+    return result[0];
+  }
+
+  async getAllLeavingCertificates(): Promise<LeavingCertificate[]> {
+    return this.db.select().from(leavingCertificates).orderBy(desc(leavingCertificates.createdAt));
+  }
+
+  async getLeavingCertificateById(id: string): Promise<LeavingCertificate | undefined> {
+    const result = await this.db.select().from(leavingCertificates).where(eq(leavingCertificates.id, id));
+    return result[0];
+  }
+
+  async deleteLeavingCertificate(id: string): Promise<boolean> {
+    const result = await this.db.delete(leavingCertificates).where(eq(leavingCertificates.id, id)).returning();
+    return result.length > 0;
+  }
+
+  // Marriage Certificates
+  async createMarriageCertificate(insertMarriageCertificate: InsertMarriageCertificate): Promise<MarriageCertificate> {
+    const result = await this.db.insert(marriageCertificates).values(insertMarriageCertificate).returning();
+    return result[0];
+  }
+
+  async getAllMarriageCertificates(): Promise<MarriageCertificate[]> {
+    return this.db.select().from(marriageCertificates).orderBy(desc(marriageCertificates.createdAt));
+  }
+
+  async getMarriageCertificateById(id: string): Promise<MarriageCertificate | undefined> {
+    const result = await this.db.select().from(marriageCertificates).where(eq(marriageCertificates.id, id));
+    return result[0];
+  }
+
+  async deleteMarriageCertificate(id: string): Promise<boolean> {
+    const result = await this.db.delete(marriageCertificates).where(eq(marriageCertificates.id, id)).returning();
     return result.length > 0;
   }
 }

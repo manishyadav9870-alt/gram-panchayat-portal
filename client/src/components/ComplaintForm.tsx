@@ -65,6 +65,11 @@ export default function ComplaintForm() {
         images: uploadedImages,
       };
 
+      console.log('Submitting complaint data:', {
+        ...complaintData,
+        images: complaintData.images?.map(img => `[Image ${img.length} chars]`)
+      });
+
       const response = await fetch('/api/complaints', {
         method: 'POST',
         headers: {
@@ -73,17 +78,23 @@ export default function ComplaintForm() {
         body: JSON.stringify(complaintData),
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error('Failed to submit complaint');
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`Failed to submit complaint: ${response.status} ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('Success result:', result);
       setTrackingNumber(result.trackingNumber);
       setFormData(data);
       setSubmitted(true);
     } catch (error) {
       console.error('Error submitting complaint:', error);
-      alert('Failed to submit complaint. Please try again.');
+      alert(`Failed to submit complaint. Please try again. Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

@@ -4,10 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LogOut, FileText, Baby, Skull, Megaphone, Plus, Menu, X, LayoutDashboard, Home, Users, UserCog } from 'lucide-react';
+import { LogOut, FileText, Baby, Skull, Megaphone, Plus, Menu, X, LayoutDashboard, Home, Users, UserCog, UserCheck, Heart } from 'lucide-react';
 import ComplaintsTable from '@/components/admin/ComplaintsTable';
 import BirthCertificatesTable from '@/components/admin/BirthCertificatesTable';
 import DeathCertificatesTable from '@/components/admin/DeathCertificatesTable';
+import LeavingCertificatesTable from '@/components/admin/LeavingCertificatesTable';
+import MarriageCertificatesTable from '@/components/admin/MarriageCertificatesTable';
 import AnnouncementsTable from '@/components/admin/AnnouncementsTable';
 import UsersTable from '@/components/admin/UsersTable';
 
@@ -40,6 +42,8 @@ export default function AdminDashboard() {
     { icon: FileText, label: 'Complaints', value: 'complaints' },
     { icon: Baby, label: 'Birth Certificates', value: 'birth' },
     { icon: Skull, label: 'Death Certificates', value: 'death' },
+    { icon: UserCheck, label: 'Leaving Certificates', value: 'leaving' },
+    { icon: Heart, label: 'Marriage Certificates', value: 'marriage' },
     { icon: Megaphone, label: 'Announcements', value: 'announcements' },
     { icon: UserCog, label: 'User Management', value: 'users' },
     { icon: Home, label: 'Go to Home', action: () => setLocation('/') },
@@ -209,6 +213,54 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <DeathCertificatesTable />
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'leaving' && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Leaving Certificates Management</CardTitle>
+                    <CardDescription>
+                      View, edit, and manage all leaving certificates
+                    </CardDescription>
+                  </div>
+                  <Link href="/admin/leaving-certificates">
+                    <Button className="gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700">
+                      <Plus className="w-4 h-4" />
+                      Manage Certificates
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <LeavingCertificatesTable />
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'marriage' && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Marriage Certificates Management</CardTitle>
+                    <CardDescription>
+                      View, edit, and manage all marriage certificates
+                    </CardDescription>
+                  </div>
+                  <Link href="/admin/marriage-certificate/new">
+                    <Button className="gap-2 bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700">
+                      <Plus className="w-4 h-4" />
+                      New Certificate
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <MarriageCertificatesTable />
               </CardContent>
             </Card>
           )}

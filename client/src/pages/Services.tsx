@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles } from 'lucide-react';
+import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles, UserCheck } from 'lucide-react';
 
 export default function Services() {
   const { t } = useLanguage();
@@ -39,54 +39,74 @@ export default function Services() {
       buttonMr: 'अर्ज करा',
     },
     {
+      icon: UserCheck,
+      titleEn: 'Leaving Certificate',
+      titleMr: 'रहिवासी दाखला',
+      descEn: 'Apply for leaving/residence certificate. Proof of residence for official purposes.',
+      descMr: 'रहिवासी दाखल्यासाठी अर्ज करा. अधिकृत कामासाठी निवासाचा पुरावा.',
+      path: '/admin/leaving-certificate/new',
+      buttonEn: 'Apply Now',
+      buttonMr: 'अर्ज करा',
+    },
+    {
+      icon: Heart,
+      titleEn: 'Marriage Certificate',
+      titleMr: 'विवाह प्रमाणपत्र',
+      descEn: 'Apply for marriage registration certificate. Official proof of marriage.',
+      descMr: 'विवाह नोंदणी प्रमाणपत्रासाठी अर्ज करा. विवाहाचा अधिकृत पुरावा.',
+      path: '/admin/marriage-certificate/new',
+      buttonEn: 'Apply Now',
+      buttonMr: 'अर्ज करा',
+    },
+    {
       icon: Users,
       titleEn: 'Ration Card',
       titleMr: 'रेशन कार्ड',
-      descEn: 'Apply for new ration card or update existing card details with family information.',
-      descMr: 'नवीन रेशन कार्डसाठी अर्ज करा किंवा विद्यमान माहिती अपडेट करा.',
-      path: '/services/ration-card',
-      buttonEn: 'Apply Now',
-      buttonMr: 'अर्ज करा',
+      descEn: 'Apply for new ration card or update existing card details with family information. (Coming Soon)',
+      descMr: 'नवीन रेशन कार्डसाठी अर्ज करा किंवा विद्यमान माहिती अपडेट करा. (लवकरच येत आहे)',
+      path: '#',
+      buttonEn: 'Coming Soon',
+      buttonMr: 'लवकरच येत आहे',
     },
     {
       icon: FileCheck,
       titleEn: 'Income Certificate',
       titleMr: 'उत्पन्न दाखला',
-      descEn: 'Apply for income certificate for various government schemes and educational purposes.',
-      descMr: 'विविध सरकारी योजना आणि शैक्षणिक हेतूंसाठी उत्पन्न दाखला मिळवा.',
-      path: '/services/income-certificate',
-      buttonEn: 'Apply Now',
-      buttonMr: 'अर्ज करा',
+      descEn: 'Apply for income certificate for various government schemes and educational purposes. (Coming Soon)',
+      descMr: 'विविध सरकारी योजना आणि शैक्षणिक हेतूंसाठी उत्पन्न दाखला मिळवा. (लवकरच येत आहे)',
+      path: '#',
+      buttonEn: 'Coming Soon',
+      buttonMr: 'लवकरच येत आहे',
     },
     {
       icon: Home,
       titleEn: 'Residence Certificate',
       titleMr: 'रहिवासी दाखला',
-      descEn: 'Get residence certificate to prove your domicile for official purposes.',
-      descMr: 'अधिकृत कामासाठी आपला रहिवास सिद्ध करण्यासाठी दाखला मिळवा.',
-      path: '/services/residence-certificate',
-      buttonEn: 'Apply Now',
-      buttonMr: 'अर्ज करा',
+      descEn: 'Get residence certificate to prove your domicile for official purposes. (Coming Soon)',
+      descMr: 'अधिकृत कामासाठी आपला रहिवास सिद्ध करण्यासाठी दाखला मिळवा. (लवकरच येत आहे)',
+      path: '#',
+      buttonEn: 'Coming Soon',
+      buttonMr: 'लवकरच येत आहे',
     },
     {
       icon: IndianRupee,
       titleEn: 'Property Tax',
       titleMr: 'मालमत्ता कर',
-      descEn: 'View property tax details, payment history and download receipts online.',
-      descMr: 'मालमत्ता कर तपशील पहा, भरणा इतिहास आणि पावत्या डाउनलोड करा.',
-      path: '/services/property-tax',
-      buttonEn: 'View Details',
-      buttonMr: 'तपशील पहा',
+      descEn: 'View property tax details, payment history and download receipts online. (Coming Soon)',
+      descMr: 'मालमत्ता कर तपशील पहा, भरणा इतिहास आणि पावत्या डाउनलोड करा. (लवकरच येत आहे)',
+      path: '#',
+      buttonEn: 'Coming Soon',
+      buttonMr: 'लवकरच येत आहे',
     },
     {
       icon: CreditCard,
       titleEn: 'Caste Certificate',
       titleMr: 'जात दाखला',
-      descEn: 'Apply for caste certificate for reservation benefits in education and employment.',
-      descMr: 'शिक्षण आणि रोजगारात आरक्षण लाभासाठी जात दाखला मिळवा.',
-      path: '/services/caste-certificate',
-      buttonEn: 'Apply Now',
-      buttonMr: 'अर्ज करा',
+      descEn: 'Apply for caste certificate for reservation benefits in education and employment. (Coming Soon)',
+      descMr: 'शिक्षण आणि रोजगारात आरक्षण लाभासाठी जात दाखला मिळवा. (लवकरच येत आहे)',
+      path: '#',
+      buttonEn: 'Coming Soon',
+      buttonMr: 'लवकरच येत आहे',
     },
   ];
 
@@ -95,25 +115,25 @@ export default function Services() {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background">
+        <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-chart-3/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <div className="absolute top-20 -left-20 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-orange-100/20 to-transparent rounded-full blur-3xl"></div>
           </div>
           
           <div className="container mx-auto px-4 max-w-7xl relative z-10">
             <div className="text-center mb-16 animate-slide-up">
-              <div className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
+              <div className="inline-flex items-center gap-2 mb-6 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-orange-200/50 shadow-lg hover:shadow-xl transition-shadow">
+                <Sparkles className="h-4 w-4 text-orange-600 animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
                   {t('Digital Services', 'डिजिटल सेवा')}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-orange-700 to-gray-900 bg-clip-text text-transparent">
                 {t('Our Services', 'आमच्या सेवा')}
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-foreground/70 max-w-3xl mx-auto leading-relaxed font-medium">
                 {t(
                   'Access all government services online. Simple, fast, and transparent.',
                   'सर्व सरकारी सेवा ऑनलाइन मिळवा. सोपे, जलद आणि पारदर्शक.'
@@ -124,9 +144,9 @@ export default function Services() {
         </section>
 
         {/* Services Grid */}
-        <section className="py-16 bg-gradient-to-b from-muted/20 to-background">
+        <section className="py-20 bg-gradient-to-b from-white to-gray-50/50">
           <div className="container mx-auto px-4 max-w-7xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {services.map((service, index) => (
                 <ServiceCard
                   key={index}

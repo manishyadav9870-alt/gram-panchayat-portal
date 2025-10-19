@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Baby, User, MapPin, Info, ArrowLeft, Save, Printer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { TranslateButton } from '@/components/ui/TranslateButton';
 
 export default function BirthCertificateForm() {
   const { t } = useLanguage();

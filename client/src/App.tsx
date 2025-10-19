@@ -24,6 +24,12 @@ import BirthCertificatePrint from "@/pages/BirthCertificatePrint";
 import DeathCertificatesList from "@/pages/DeathCertificatesList";
 import DeathCertificateForm from "@/pages/DeathCertificateForm";
 import DeathCertificatePrint from "@/pages/DeathCertificatePrint";
+import LeavingCertificateForm from "@/pages/LeavingCertificateForm";
+import LeavingCertificatesList from "@/pages/LeavingCertificatesList";
+import LeavingCertificatePrint from "@/pages/LeavingCertificatePrint";
+import MarriageCertificateForm from "@/pages/MarriageCertificateForm";
+import MarriageCertificatesList from "@/pages/MarriageCertificatesList";
+import MarriageCertificatePrint from "@/pages/MarriageCertificatePrint";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -81,6 +87,38 @@ function Router() {
           <DeathCertificateForm />
         </ProtectedRoute>
       </Route>
+      <Route path="/admin/leaving-certificates">
+        <ProtectedRoute>
+          <LeavingCertificatesList />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/leaving-certificate/new">
+        <ProtectedRoute>
+          <LeavingCertificateForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/leaving-certificate/:id">
+        <ProtectedRoute>
+          <LeavingCertificateForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/leaving-certificate/print/:id" component={LeavingCertificatePrint} />
+      <Route path="/admin/marriage-certificates">
+        <ProtectedRoute>
+          <MarriageCertificatesList />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/marriage-certificate/new">
+        <ProtectedRoute>
+          <MarriageCertificateForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/marriage-certificate/:id">
+        <ProtectedRoute>
+          <MarriageCertificateForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/marriage-certificate/print/:id" component={MarriageCertificatePrint} />
       
       <Route component={NotFound} />
     </Switch>

@@ -211,19 +211,38 @@ export default function AnnouncementsTable() {
                     const englishValue = e.target.value;
                     setEditing({ ...editing, description: englishValue });
                     
-                    // Auto-transliterate to Marathi
+                    // Auto-transliterate to Marathi - handle long text by breaking into chunks
                     if (englishValue) {
                       try {
-                        const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(englishValue)}&itc=mr-t-i0-und&num=1`);
-                        const data = await response.json();
-                        if (data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
-                          setEditing(prev => ({ ...prev!, descriptionMr: data[1][0][1][0] }));
+                        // Break text into words and process in chunks of 5-6 words
+                        const words = englishValue.split(/\s+/);
+                        let translatedText = '';
+                        const chunkSize = 5; // Process 5 words at a time
+                        
+                        for (let i = 0; i < words.length; i += chunkSize) {
+                          const chunk = words.slice(i, i + chunkSize).join(' ');
+                          if (chunk.trim()) {
+                            try {
+                              const response = await fetch(`https://inputtools.google.com/request?text=${encodeURIComponent(chunk)}&itc=mr-t-i0-und&num=1`);
+                              const data = await response.json();
+                              if (data[1] && data[1][0] && data[1][0][1] && data[1][0][1][0]) {
+                                translatedText += data[1][0][1][0] + ' ';
+                              } else {
+                                translatedText += chunk + ' ';
+                              }
+                            } catch (chunkError) {
+                              console.error('Chunk translation failed:', chunkError);
+                              translatedText += chunk + ' ';
+                            }
+                          }
                         }
+                        
+                        setEditing(prev => ({ ...prev!, descriptionMr: translatedText.trim() }));
                       } catch (error) {
                         console.error('Transliteration failed:', error);
                       }
                     }
-                  }} 
+                  }}
                   rows={3} 
                 />
               </div>

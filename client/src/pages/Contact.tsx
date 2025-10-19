@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone, Mail, MapPin, Clock, Sparkles } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Sparkles, MessageCircle, Send, Users } from 'lucide-react';
 
 export default function Contact() {
   const { t } = useLanguage();
@@ -43,25 +43,25 @@ export default function Contact() {
       <Header />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-background via-primary/5 to-background">
+        <section className="relative py-16 md:py-20 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-orange-50/30">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 -left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-chart-3/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <div className="absolute top-20 -left-20 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl animate-float"></div>
+            <div className="absolute bottom-20 -right-20 w-[500px] h-[500px] bg-orange-300/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-orange-100/20 to-transparent rounded-full blur-3xl"></div>
           </div>
 
           <div className="container mx-auto px-4 max-w-6xl relative z-10">
             <div className="text-center mb-16 animate-slide-up">
-              <div className="inline-flex items-center gap-2 mb-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 border border-primary/20 backdrop-blur-sm shadow-lg">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-                <span className="text-sm font-semibold bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
+              <div className="inline-flex items-center gap-2 mb-6 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md border border-orange-200/50 shadow-lg hover:shadow-xl transition-shadow">
+                <MessageCircle className="h-4 w-4 text-orange-600 animate-pulse" />
+                <span className="text-sm font-semibold bg-gradient-to-r from-orange-600 to-orange-500 bg-clip-text text-transparent">
                   {t('We\'re Here to Help', 'आम्ही मदतीसाठी आहोत')}
                 </span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 bg-gradient-to-r from-gray-900 via-orange-700 to-gray-900 bg-clip-text text-transparent">
                 {t('Contact Us', 'आमच्याशी संपर्क साधा')}
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed font-medium">
                 {t('Get in touch with us for any queries or assistance', 'कोणत्याही प्रश्न किंवा सहाय्यासाठी आमच्याशी संपर्क साधा')}
               </p>
             </div>
@@ -69,31 +69,39 @@ export default function Contact() {
         </section>
 
         {/* Contact Cards Section */}
-        <section className="py-16 bg-gradient-to-b from-muted/20 to-background">
+        <section className="py-16 bg-gradient-to-b from-white to-gray-50/50">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               {contactInfo.map((info, index) => {
                 const Icon = info.icon;
                 const gradients = [
-                  'from-blue-500 to-cyan-500',
-                  'from-purple-500 to-pink-500',
-                  'from-orange-500 to-red-500',
-                  'from-green-500 to-emerald-500'
+                  'from-blue-500 to-blue-600',
+                  'from-pink-500 to-pink-600',
+                  'from-orange-500 to-orange-600',
+                  'from-green-500 to-green-600'
+                ];
+                const bgColors = [
+                  'from-blue-50 to-indigo-50',
+                  'from-pink-50 to-purple-50',
+                  'from-orange-50 to-red-50',
+                  'from-green-50 to-emerald-50'
                 ];
                 return (
-                  <Card key={index} className="card-modern glass-card border-2 border-white/20 rounded-3xl group hover:border-primary/40 transition-all duration-300 hover:shadow-xl">
+                  <Card key={index} className={`bg-gradient-to-br ${bgColors[index]} border-2 border-gray-200/60 rounded-3xl group hover:border-orange-300 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2`}>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-4">
-                        <div className={`h-16 w-16 rounded-2xl bg-gradient-to-br ${gradients[index]} text-white flex items-center justify-center shadow-2xl transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                          <Icon className="h-8 w-8" />
+                        <div className={`h-20 w-20 rounded-2xl bg-gradient-to-br ${gradients[index]} text-white flex items-center justify-center shadow-lg group-hover:shadow-xl transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                          <Icon className="h-10 w-10" />
                         </div>
-                        <span className="text-xl font-bold">{t(info.titleEn, info.titleMr)}</span>
+                        <span className="text-xl font-bold text-gray-900">{t(info.titleEn, info.titleMr)}</span>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-muted-foreground whitespace-pre-line leading-relaxed text-lg" data-testid={`contact-${index}`}>
-                        {t(info.detailsEn, info.detailsMr)}
-                      </p>
+                      <div className="bg-white/60 rounded-xl p-4">
+                        <p className="text-gray-700 whitespace-pre-line leading-relaxed text-base font-medium" data-testid={`contact-${index}`}>
+                          {t(info.detailsEn, info.detailsMr)}
+                        </p>
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -101,7 +109,7 @@ export default function Contact() {
             </div>
 
             {/* Emergency Contact Card */}
-            <Card className="card-modern glass-card border-2 border-destructive/40 rounded-3xl bg-gradient-to-br from-destructive/10 to-destructive/5 overflow-hidden relative">
+            <Card className="border-2 border-red-200 rounded-3xl bg-gradient-to-br from-red-50 to-orange-50 overflow-hidden relative hover:shadow-2xl transition-shadow">
               <div className="absolute inset-0 bg-gradient-to-br from-destructive/5 to-transparent"></div>
               <CardHeader className="relative">
                 <CardTitle className="text-center flex flex-col md:flex-row items-center justify-center gap-4">

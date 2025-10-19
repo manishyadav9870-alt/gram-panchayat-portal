@@ -8,7 +8,9 @@ import {
   insertComplaintSchema, 
   insertBirthCertificateSchema, 
   insertDeathCertificateSchema,
-  insertAnnouncementSchema 
+  insertAnnouncementSchema,
+  insertLeavingCertificateSchema,
+  insertMarriageCertificateSchema
 } from "@shared/schema";
 
 // Extend Express Session type
@@ -81,10 +83,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Complaint routes
   app.post("/api/complaints", async (req, res) => {
     try {
+      console.log('Received complaint data:', {
+        ...req.body,
+        images: req.body.images?.map((img: string) => `[Image ${img.length} chars]`)
+      });
+      
       const validatedData = insertComplaintSchema.parse(req.body);
+      console.log('Validation successful');
+      
       const complaint = await storage.createComplaint(validatedData);
+      console.log('Complaint created successfully:', complaint.trackingNumber);
+      
       res.status(201).json(complaint);
     } catch (error: any) {
+      console.error('Error in complaint creation:', error);
       res.status(400).json({ message: error.message || "Invalid complaint data" });
     }
   });
@@ -367,6 +379,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Announcement deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message || "Failed to delete announcement" });
+    }
+  });
+
+  // Leaving Certificate routes
+  app.post("/api/leaving-certificates", async (req, res) => {
+    try {
+      const validatedData = insertLeavingCertificateSchema.parse(req.body);
+      const certificate = await storage.createLeavingCertificate(validatedData);
+      res.status(201).json(certificate);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message || "Invalid leaving certificate data" });
+    }
+  });
+
+  app.get("/api/leaving-certificates", async (req, res) => {
+    try {
+      const certificates = await storage.getAllLeavingCertificates();
+      res.json(certificates);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch leaving certificates" });
+    }
+  });
+
+  app.get("/api/leaving-certificates/:id", async (req, res) => {
+    try {
+      const certificate = await storage.getLeavingCertificateById(req.params.id);
+      if (!certificate) {
+        return res.status(404).json({ message: "Leaving certificate not found" });
+      }
+      res.json(certificate);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch leaving certificate" });
+    }
+  });
+
+  app.delete("/api/leaving-certificates/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteLeavingCertificate(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Leaving certificate not found" });
+      }
+      res.json({ message: "Leaving certificate deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to delete leaving certificate" });
+    }
+  });
+
+  // Marriage Certificate routes
+  app.post("/api/marriage-certificates", async (req, res) => {
+    try {
+      const validatedData = insertMarriageCertificateSchema.parse(req.body);
+      const certificate = await storage.createMarriageCertificate(validatedData);
+      res.status(201).json(certificate);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message || "Invalid marriage certificate data" });
+    }
+  });
+
+  app.get("/api/marriage-certificates", async (req, res) => {
+    try {
+      const certificates = await storage.getAllMarriageCertificates();
+      res.json(certificates);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch marriage certificates" });
+    }
+  });
+
+  app.get("/api/marriage-certificates/:id", async (req, res) => {
+    try {
+      const certificate = await storage.getMarriageCertificateById(req.params.id);
+      if (!certificate) {
+        return res.status(404).json({ message: "Marriage certificate not found" });
+      }
+      res.json(certificate);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to fetch marriage certificate" });
+    }
+  });
+
+  app.delete("/api/marriage-certificates/:id", async (req, res) => {
+    try {
+      const deleted = await storage.deleteMarriageCertificate(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Marriage certificate not found" });
+      }
+      res.json({ message: "Marriage certificate deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Failed to delete marriage certificate" });
     }
   });
 

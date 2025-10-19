@@ -38,6 +38,7 @@ export const insertComplaintSchema = createInsertSchema(complaints).omit({
   trackingNumber: true,
   createdAt: true,
   status: true,
+  adminRemark: true,
 });
 
 export type InsertComplaint = z.infer<typeof insertComplaintSchema>;
@@ -173,3 +174,72 @@ export const insertAnnouncementSchema = createInsertSchema(announcements).omit({
 
 export type InsertAnnouncement = z.infer<typeof insertAnnouncementSchema>;
 export type Announcement = typeof announcements.$inferSelect;
+
+export const leavingCertificates = pgTable("leaving_certificates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  certificateNumber: text("certificate_number").notNull(),
+  dispatchNumber: text("dispatch_number").notNull(),
+  dispatchDate: text("dispatch_date").notNull(),
+  applicantNameEn: text("applicant_name_en").notNull(),
+  applicantNameMr: text("applicant_name_mr").notNull(),
+  aadharNumber: text("aadhar_number").notNull(),
+  residentOfEn: text("resident_of_en").notNull(),
+  residentOfMr: text("resident_of_mr").notNull(),
+  taluka: text("taluka").notNull(),
+  district: text("district").notNull(),
+  state: text("state").notNull().default("Maharashtra"),
+  issuingAuthority: text("issuing_authority").notNull(),
+  issueDate: text("issue_date").notNull(),
+  placeOfIssue: text("place_of_issue").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertLeavingCertificateSchema = createInsertSchema(leavingCertificates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertLeavingCertificate = z.infer<typeof insertLeavingCertificateSchema>;
+export type LeavingCertificate = typeof leavingCertificates.$inferSelect;
+
+// Marriage Certificates
+export const marriageCertificates = pgTable("marriage_certificates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  certificateNumber: text("certificate_number").notNull(),
+  registrationNumber: text("registration_number").notNull(),
+  registrationDate: text("registration_date").notNull(),
+  
+  // Husband Details
+  husbandNameEn: text("husband_name_en").notNull(),
+  husbandNameMr: text("husband_name_mr").notNull(),
+  husbandAadhar: text("husband_aadhar").notNull(),
+  
+  // Wife Details
+  wifeNameEn: text("wife_name_en").notNull(),
+  wifeNameMr: text("wife_name_mr").notNull(),
+  wifeAadhar: text("wife_aadhar").notNull(),
+  
+  // Marriage Details
+  marriageDate: text("marriage_date").notNull(),
+  marriagePlace: text("marriage_place").notNull(),
+  
+  // Location
+  taluka: text("taluka").notNull(),
+  district: text("district").notNull(),
+  state: text("state").notNull().default("Maharashtra"),
+  
+  // Authority
+  issuingAuthority: text("issuing_authority").notNull(),
+  issueDate: text("issue_date").notNull(),
+  placeOfIssue: text("place_of_issue").notNull(),
+  
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertMarriageCertificateSchema = createInsertSchema(marriageCertificates).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertMarriageCertificate = z.infer<typeof insertMarriageCertificateSchema>;
+export type MarriageCertificate = typeof marriageCertificates.$inferSelect;
