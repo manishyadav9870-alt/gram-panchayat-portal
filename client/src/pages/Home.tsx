@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Footer from '@/components/Footer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, FileText, Heart, AlertCircle, Building2, Award } from 'lucide-react';
@@ -20,6 +21,7 @@ interface Announcement {
 
 export default function Home() {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
@@ -159,7 +161,8 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {services.map((service, index) => {
                 const Icon = service.icon;
-                const isDisabled = service.adminOnly;
+                // Only disable if adminOnly AND user is not logged in
+                const isDisabled = service.adminOnly && !user;
                 
                 if (isDisabled) {
                   return (

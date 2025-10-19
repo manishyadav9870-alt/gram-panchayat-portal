@@ -2,6 +2,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import { LucideIcon } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ServiceCardProps {
   icon: LucideIcon;
@@ -13,8 +14,10 @@ interface ServiceCardProps {
 }
 
 export default function ServiceCard({ icon: Icon, title, description, path, buttonText, adminOnly = false }: ServiceCardProps) {
+  const { user } = useAuth();
   const isComingSoon = path === '#' || buttonText.includes('Coming Soon') || buttonText.includes('लवकरच');
-  const isDisabled = isComingSoon || adminOnly;
+  // Only disable if adminOnly AND user is not logged in
+  const isDisabled = isComingSoon || (adminOnly && !user);
   
   return (
     <Card className={`flex flex-col h-full bg-white/80 backdrop-blur-sm border border-gray-200/60 rounded-3xl overflow-hidden group relative transition-all duration-500 ${isDisabled ? 'opacity-60 cursor-not-allowed' : 'hover:border-primary/30 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] hover:-translate-y-2'}`}>
