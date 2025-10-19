@@ -50,12 +50,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
-      // For demo purposes, using simple admin credentials
-      // In production, use proper password hashing with bcrypt
-      if (username === "admin" && password === "admin123") {
-        req.session.userId = "admin-id";
-        req.session.username = username;
-        res.json({ message: "Login successful", username });
+      // Check user in database
+      const user = await storage.getUserByUsername(username);
+      
+      if (user && user.password === password) {
+        // In production, use bcrypt.compare() for password verification
+        req.session.userId = user.id;
+        req.session.username = user.username;
+        res.json({ message: "Login successful", username: user.username });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }

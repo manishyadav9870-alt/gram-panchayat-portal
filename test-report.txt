@@ -1,0 +1,82 @@
+
+╔══════════════════════════════════════════════════════════════╗
+║          GRAM PANCHAYAT PORTAL - TEST REPORT                 ║
+╚══════════════════════════════════════════════════════════════╝
+
+Test Date: 19/10/2025, 6:25:31 pm
+Total Tests: 15
+✅ Passed: 11
+❌ Failed: 4
+
+═══════════════════════════════════════════════════════════════
+
+DETAILED RESULTS:
+
+
+1. ❌ /
+   Message: Error: Navigation timeout of 10000 ms exceeded
+   Screenshot: screenshots/test-1-Home-Page-error.png
+   Time: 2025-10-19T12:54:39.515Z
+
+2. ✅ /about
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:54:42.905Z
+
+3. ❌ /services
+   Message: Error: Expected at least 4 service cards, found 0
+   Screenshot: screenshots/test-2-Services-Page-error.png
+   Time: 2025-10-19T12:54:44.564Z
+
+4. ✅ /announcements
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:54:48.119Z
+
+5. ❌ /contact
+   Message: Error: Expected at least 4 contact cards, found 0
+   Screenshot: screenshots/test-3-Contact-Page-error.png
+   Time: 2025-10-19T12:54:49.785Z
+
+6. ✅ /track
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:54:52.917Z
+
+7. ❌ /services/complaint
+   Message: Error: Error: failed to find element matching selector "input[name="nameMarathi"]"
+   Screenshot: screenshots/test-4-Complaint-Service-error.png
+   Time: 2025-10-19T12:54:56.539Z
+
+8. ✅ /services/birth-certificate
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:01.967Z
+
+9. ✅ /services/death-certificate
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:07.881Z
+
+10. ✅ /admin/login
+   Message: Admin login successful
+   Time: 2025-10-19T12:55:12.274Z
+
+11. ✅ /admin/dashboard
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:16.474Z
+
+12. ✅ /services/birth-certificate
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:19.891Z
+
+13. ✅ /services/death-certificate
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:24.026Z
+
+14. ✅ /admin/leaving-certificate/new
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:27.304Z
+
+15. ✅ /admin/marriage-certificate/new
+   Message: Page loaded successfully
+   Time: 2025-10-19T12:55:30.590Z
+
+═══════════════════════════════════════════════════════════════
+
+SUMMARY: ⚠️  4 TEST(S) FAILED
