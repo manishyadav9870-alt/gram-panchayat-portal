@@ -20,6 +20,9 @@ export default function Hero() {
     '/images/gallery/whatsapp_5.jpeg',
     '/images/gallery/whatsapp_6.jpeg',
     '/images/gallery/whatsapp_7.jpeg',
+    '/images/gallery/WhatsApp_12.jpeg',
+    '/images/gallery/WhatsApp_13.jpeg',
+    '/images/gallery/WhatsApp_14.jpeg',
   ];
 
   // Auto-advance carousel every 5 seconds

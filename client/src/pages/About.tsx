@@ -8,17 +8,29 @@ export default function About() {
   const { t } = useLanguage();
 
   const members = [
-    { nameEn: 'Ramesh Patil', nameMr: 'रमेश पाटील', roleEn: 'Sarpanch', roleMr: 'सरपंच' },
-    { nameEn: 'Sunita Deshmukh', nameMr: 'सुनिता देशमुख', roleEn: 'Deputy Sarpanch', roleMr: 'उपसरपंच' },
-    { nameEn: 'Mohan Shinde', nameMr: 'मोहन शिंदे', roleEn: 'Member', roleMr: 'सदस्य' },
-    { nameEn: 'Savita Jadhav', nameMr: 'सविता जाधव', roleEn: 'Member', roleMr: 'सदस्य' },
+    { nameEn: 'Hon. Hanumat Vishnu Jadhav', nameMr: 'मा.श्री. हनुमत विष्णु जाधव', roleEn: 'Gram Panchayat Officer', roleMr: 'ग्रामपंचायत अधिकारी' },
+    { nameEn: 'Hon. Janu Krishna Gayakwad', nameMr: 'मा.श्री. जानू कृष्णा गायकवाड', roleEn: 'Sarpanch', roleMr: 'सरपंच' },
+    { nameEn: 'Hon. Somanath Namdev Gayakwad', nameMr: 'मा.श्री. सोमनाथ नामदेव गायकवाड', roleEn: 'Deputy Sarpanch', roleMr: 'उपसरपंच' },
+    { nameEn: 'Hon. Balu Vaman Damke', nameMr: 'मा.श्री. बाळू वामन ढमके', roleEn: 'Member (Ward 1)', roleMr: 'सदस्य (वार्ड १)' },
+    { nameEn: 'Smt. Suvarna Amol Gayakwad', nameMr: 'मा.सौ. सुवर्णा अमोल गायकवाड', roleEn: 'Member (Ward 1)', roleMr: 'सदस्य (वार्ड १)' },
+    { nameEn: 'Hon. Balkrushna Ganpat Gayakwad', nameMr: 'मा.श्री. बाळकृष्ण गणपत गायकवाड', roleEn: 'Member (Ward 2)', roleMr: 'सदस्य (वार्ड २)' },
+    { nameEn: 'Smt. Gangubai Ganu Gayakwad', nameMr: 'मा.सौ. गंगूबाई गणू गायकवाड', roleEn: 'Member (Ward 2)', roleMr: 'सदस्य (वार्ड २)' },
+    { nameEn: 'Smt. Samiksha Subhash Damke', nameMr: 'मा.सौ. समिक्षा सुभाष ढमके', roleEn: 'Member (Ward 3)', roleMr: 'सदस्य (वार्ड ३)' },
+    { nameEn: 'Smt. Sanchita Sachin Gayakwad', nameMr: 'मा.सौ. संचिता सचिन गायकवाड', roleEn: 'Member (Ward 3)', roleMr: 'सदस्य (वार्ड ३)' },
+    { nameEn: 'Smt. Monika Madan Gayakwad', nameMr: 'मा.सौ. मोनिका मदन गायकवाड', roleEn: 'Operator', roleMr: 'ऑपरेटर' },
+    { nameEn: 'Hon. Shankar Barku Dharat', nameMr: 'मा.श्री. शंकर बारकू धरत', roleEn: 'Employee', roleMr: 'कर्मचारी' },
+    { nameEn: 'Hon. Balu Nago Gayakwad', nameMr: 'मा.श्री. बाळू नागो गायकवाड', roleEn: 'Water Supply Employee', roleMr: 'पाणी पु. कर्मचारी' },
+    { nameEn: 'Mr. Krushnakesh Martand Damke', nameMr: 'मा.कु. कृष्णकेश मार्तंड ढमके', roleEn: 'Employment Servant', roleMr: 'रोजगारसेवक' },
   ];
 
   const stats = [
-    { icon: Users, labelEn: 'Population', labelMr: 'लोकसंख्या', value: '5,000+', color: 'from-blue-500 to-cyan-500' },
-    { icon: Building2, labelEn: 'Households', labelMr: 'घरे', value: '1,200+', color: 'from-purple-500 to-pink-500' },
-    { icon: TrendingUp, labelEn: 'Growth Rate', labelMr: 'वाढ दर', value: '12%', color: 'from-green-500 to-emerald-500' },
-    { icon: Heart, labelEn: 'Satisfaction', labelMr: 'समाधान', value: '95%', color: 'from-orange-500 to-red-500' },
+    { icon: Calendar, labelEn: 'Established', labelMr: 'ग्रामपंचायत स्थापना', value: '01/01/1992', color: 'from-blue-500 to-cyan-500' },
+    { icon: MapPin, labelEn: 'Area', labelMr: 'ग्रामपंचायत क्षेत्र', value: '151.7 sq/k.m.', color: 'from-purple-500 to-pink-500' },
+    { icon: Building2, labelEn: 'Total Voters', labelMr: 'कुल्ल संख्या', value: '223', color: 'from-green-500 to-emerald-500' },
+    { icon: Users, labelEn: 'Wards', labelMr: 'वार्ड', value: '3', color: 'from-orange-500 to-red-500' },
+    { icon: Users, labelEn: 'Population', labelMr: 'लोकसंख्या', value: '1067', color: 'from-indigo-500 to-blue-500' },
+    { icon: Users, labelEn: 'Male', labelMr: 'पुरुष', value: '567', color: 'from-teal-500 to-cyan-500' },
+    { icon: Users, labelEn: 'Female', labelMr: 'स्त्री', value: '500', color: 'from-pink-500 to-rose-500' },
   ];
 
   const achievements = [
@@ -57,18 +69,18 @@ export default function About() {
         {/* Statistics Section */}
         <section className="py-10 bg-gradient-to-b from-white to-gray-50/50">
           <div className="container mx-auto px-4 max-w-6xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
               {stats.map((stat, index) => {
                 const Icon = stat.icon;
                 return (
                   <Card key={index} className="relative overflow-hidden border border-gray-200/60 hover:border-orange-300 rounded-2xl transition-all duration-300 group hover:shadow-lg">
                     <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
-                    <CardContent className="p-4 relative">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-all duration-300`}>
-                        <Icon className="h-6 w-6 text-white" />
+                    <CardContent className="p-6 relative">
+                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4 shadow-md group-hover:scale-105 transition-all duration-300`}>
+                        <Icon className="h-7 w-7 text-white" />
                       </div>
-                      <div className="text-3xl font-bold mb-1 text-gray-900">{stat.value}</div>
-                      <div className="text-xs text-gray-600 font-semibold">{t(stat.labelEn, stat.labelMr)}</div>
+                      <div className="text-2xl md:text-3xl font-bold mb-2 text-gray-900">{stat.value}</div>
+                      <div className="text-sm text-gray-600 font-semibold">{t(stat.labelEn, stat.labelMr)}</div>
                     </CardContent>
                   </Card>
                 );
@@ -132,26 +144,35 @@ export default function About() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {members.map((member, index) => {
                       const gradients = [
                         'from-blue-500 to-cyan-500',
                         'from-purple-500 to-pink-500',
                         'from-orange-500 to-red-500',
-                        'from-green-500 to-emerald-500'
+                        'from-green-500 to-emerald-500',
+                        'from-indigo-500 to-blue-500',
+                        'from-pink-500 to-rose-500',
+                        'from-teal-500 to-cyan-500',
+                        'from-amber-500 to-orange-500',
+                        'from-violet-500 to-purple-500',
+                        'from-lime-500 to-green-500',
+                        'from-sky-500 to-blue-500',
+                        'from-fuchsia-500 to-pink-500',
+                        'from-emerald-500 to-teal-500'
                       ];
                       return (
                         <div 
                           key={index} 
-                          className="group flex items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-background to-muted/30 border-2 border-white/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg"
+                          className="group flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-background to-muted/30 border border-white/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg"
                           data-testid={`member-${index}`}
                         >
-                          <div className={`h-16 w-16 rounded-xl bg-gradient-to-br ${gradients[index]} text-white flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-transform duration-300`}>
-                            <Users className="h-8 w-8" />
+                          <div className={`h-12 w-12 flex-shrink-0 rounded-lg bg-gradient-to-br ${gradients[index]} text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300`}>
+                            <Users className="h-6 w-6" />
                           </div>
-                          <div>
-                            <h3 className="font-bold text-lg group-hover:text-primary transition-colors">{t(member.nameEn, member.nameMr)}</h3>
-                            <p className="text-sm text-muted-foreground font-medium">{t(member.roleEn, member.roleMr)}</p>
+                          <div className="min-w-0">
+                            <h3 className="font-bold text-sm group-hover:text-primary transition-colors truncate">{t(member.nameEn, member.nameMr)}</h3>
+                            <p className="text-xs text-muted-foreground font-medium">{t(member.roleEn, member.roleMr)}</p>
                           </div>
                         </div>
                       );
@@ -212,7 +233,7 @@ export default function About() {
                       </div>
                       <div>
                         <h4 className="font-semibold mb-1">{t('Address', 'पत्ता')}</h4>
-                        <p className="text-sm text-muted-foreground">{t('Kishore Village, Taluka, District', 'किशोर गाव, तालुका, जिल्हा')}</p>
+                        <p className="text-sm text-muted-foreground">{t('Ta. Murkhed, Dist. Varne - 421401', 'ता.मुरखेड, जि. वर्णे-४२१४०१')}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4 p-4 rounded-xl bg-background/50 border border-white/20">
