@@ -113,16 +113,6 @@ export default function Services() {
       buttonMr: 'लवकरच येत आहे',
     },
     {
-      icon: IndianRupee,
-      titleEn: 'Property Tax',
-      titleMr: 'मालमत्ता कर',
-      descEn: 'View property tax details, payment history and download receipts online. (Coming Soon)',
-      descMr: 'मालमत्ता कर तपशील पहा, भरणा इतिहास आणि पावत्या डाउनलोड करा. (लवकरच येत आहे)',
-      path: '#',
-      buttonEn: 'Coming Soon',
-      buttonMr: 'लवकरच येत आहे',
-    },
-    {
       icon: CreditCard,
       titleEn: 'Caste Certificate',
       titleMr: 'जात दाखला',
