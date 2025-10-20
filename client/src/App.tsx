@@ -13,6 +13,7 @@ import Announcements from "@/pages/Announcements";
 import Contact from "@/pages/Contact";
 import TrackApplication from "@/pages/TrackApplication";
 import ComplaintService from "@/pages/ComplaintService";
+import PropertyTaxService from "@/pages/PropertyTaxService";
 import BirthCertificateService from "@/pages/BirthCertificateService";
 import DeathCertificateService from "@/pages/DeathCertificateService";
 import Records from "@/pages/Records";
@@ -45,6 +46,7 @@ function Router() {
       
       {/* Public Service Routes - No Login Required */}
       <Route path="/services/complaint" component={ComplaintService} />
+      <Route path="/services/property-tax" component={PropertyTaxService} />
       
       {/* Birth & Death Certificate - Admin Only */}
       <Route path="/services/birth-certificate">

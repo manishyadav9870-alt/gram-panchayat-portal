@@ -1,6 +1,8 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
+import csv from "csv-parser";
+import { Readable } from "stream";
 import { storage } from "./storage";
 import { generateBirthCertificatePDF, generateDeathCertificatePDF } from "./pdfGenerator";
 import { extractTextFromPDFBuffer, parseBirthCertificate } from "./ocrProcessor";
@@ -29,7 +31,7 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-// Multer configuration for file uploads
+// Multer configuration for PDF uploads
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -40,6 +42,21 @@ const upload = multer({
       cb(null, true);
     } else {
       cb(new Error("Only PDF files are allowed"));
+    }
+  },
+});
+
+// Multer configuration for CSV uploads
+const uploadCSV = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "text/csv" || file.originalname.endsWith('.csv')) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only CSV files are allowed"));
     }
   },
 });
@@ -659,6 +676,239 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "User deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message || "Failed to delete user" });
+    }
+  });
+
+  // Property Tax Routes
+  app.get("/api/property-tax/:propertyNumber", async (req, res) => {
+    try {
+      const { propertyNumber } = req.params;
+      const property = await storage.getPropertyByNumber(propertyNumber);
+      
+      if (!property) {
+        return res.status(404).json({ 
+          message: "Property not found" 
+        });
+      }
+
+      // Get payment history
+      const payments = await storage.getPropertyPayments(propertyNumber);
+      
+      // Calculate totals
+      const currentYear = new Date().getFullYear();
+      const yearsSinceRegistration = currentYear - property.registrationYear + 1;
+      const totalDue = Number(property.annualTax) * yearsSinceRegistration;
+      const totalPaid = payments.reduce((sum, p) => sum + Number(p.amountPaid), 0);
+      
+      res.json({
+        ...property,
+        totalPaid,
+        totalDue: totalDue - totalPaid,
+        payments: payments.map(p => ({
+          year: p.paymentYear,
+          amount: Number(p.amountPaid),
+          date: p.paymentDate,
+          receiptNumber: p.receiptNumber,
+        })),
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch property details" 
+      });
+    }
+  });
+
+  app.get("/api/admin/properties", requireAuth, async (req, res) => {
+    try {
+      const properties = await storage.getAllProperties();
+      res.json(properties);
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch properties" 
+      });
+    }
+  });
+
+  app.post("/api/admin/properties", requireAuth, async (req, res) => {
+    try {
+      const property = await storage.createProperty(req.body);
+      res.status(201).json(property);
+    } catch (error: any) {
+      res.status(400).json({ 
+        message: error.message || "Failed to create property" 
+      });
+    }
+  });
+
+  // Public payment recording (for QR code payments) - Status: Pending
+  app.post("/api/property-payments", async (req, res) => {
+    try {
+      const paymentData = {
+        ...req.body,
+        status: 'pending', // Default status for public payments
+      };
+      const payment = await storage.createPropertyPayment(paymentData);
+      res.status(201).json({ 
+        success: true,
+        message: "Payment submitted for verification",
+        payment 
+      });
+    } catch (error: any) {
+      console.error('Payment recording error:', error);
+      res.status(400).json({ 
+        success: false,
+        message: error.message || "Failed to record payment" 
+      });
+    }
+  });
+
+  // Admin-only payment recording
+  app.post("/api/admin/property-payments", requireAuth, async (req, res) => {
+    try {
+      const payment = await storage.createPropertyPayment(req.body);
+      res.status(201).json(payment);
+    } catch (error: any) {
+      res.status(400).json({ 
+        message: error.message || "Failed to record payment" 
+      });
+    }
+  });
+
+  // Get pending payments for verification
+  app.get("/api/admin/pending-payments", requireAuth, async (req, res) => {
+    try {
+      const payments = await storage.getPendingPayments();
+      res.json(payments);
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch pending payments" 
+      });
+    }
+  });
+
+  // Get all payments
+  app.get("/api/admin/all-payments", requireAuth, async (req, res) => {
+    try {
+      const payments = await storage.getAllPayments();
+      res.json(payments);
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch payments" 
+      });
+    }
+  });
+
+  // Approve/Reject payment
+  app.patch("/api/admin/payments/:id/status", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const verifiedBy = req.user?.username || 'admin';
+      
+      const payment = await storage.updatePaymentStatus(id, status, verifiedBy);
+      res.json(payment);
+    } catch (error: any) {
+      res.status(400).json({ 
+        message: error.message || "Failed to update payment status" 
+      });
+    }
+  });
+
+  // CSV Upload for bulk property import
+  app.post("/api/admin/properties/upload", requireAuth, uploadCSV.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const results: any[] = [];
+      const errors: string[] = [];
+      let successCount = 0;
+      let failedCount = 0;
+
+      // Parse CSV - Remove BOM if present
+      let csvContent = req.file.buffer.toString('utf8');
+      // Remove UTF-8 BOM
+      if (csvContent.charCodeAt(0) === 0xFEFF) {
+        csvContent = csvContent.slice(1);
+      }
+      const stream = Readable.from(csvContent);
+      
+      stream
+        .pipe(csv())
+        .on('data', (row) => {
+          results.push(row);
+        })
+        .on('end', async () => {
+          console.log('CSV parsed, total rows:', results.length);
+          if (results.length > 0) {
+            console.log('First row keys:', Object.keys(results[0]));
+            console.log('First row data:', results[0]);
+          }
+
+          // Process each row
+          for (let i = 0; i < results.length; i++) {
+            const row = results[i];
+            try {
+              // Skip empty rows
+              if (!row.property_number && !row.owner_name) {
+                continue;
+              }
+
+              // Validate required fields
+              const missingFields = [];
+              if (!row.property_number?.trim()) missingFields.push('property_number');
+              if (!row.owner_name?.trim()) missingFields.push('owner_name');
+              if (!row.address?.trim()) missingFields.push('address');
+              if (!row.area_sqft?.trim()) missingFields.push('area_sqft');
+              if (!row.annual_tax?.trim()) missingFields.push('annual_tax');
+              if (!row.registration_year?.trim()) missingFields.push('registration_year');
+
+              if (missingFields.length > 0) {
+                errors.push(`Row ${i + 2}: Missing fields: ${missingFields.join(', ')}`);
+                failedCount++;
+                continue;
+              }
+
+              // Create property object
+              const propertyData = {
+                propertyNumber: row.property_number.trim(),
+                ownerName: row.owner_name.trim(),
+                ownerNameMr: row.owner_name_mr?.trim() || null,
+                address: row.address.trim(),
+                addressMr: row.address_mr?.trim() || null,
+                areaSqft: parseInt(row.area_sqft),
+                annualTax: parseFloat(row.annual_tax).toString(),
+                registrationYear: parseInt(row.registration_year),
+                status: 'active'
+              };
+
+              // Insert into database
+              await storage.createProperty(propertyData);
+              successCount++;
+            } catch (error: any) {
+              errors.push(`Row ${i + 2} (${row.property_number}): ${error.message}`);
+              failedCount++;
+            }
+          }
+
+          // Send response
+          res.json({
+            success: successCount,
+            failed: failedCount,
+            errors: errors
+          });
+        })
+        .on('error', (error) => {
+          console.error('CSV parsing error:', error);
+          res.status(500).json({ message: "Failed to parse CSV file" });
+        });
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      res.status(500).json({ 
+        message: error.message || "Failed to upload properties" 
+      });
     }
   });
 

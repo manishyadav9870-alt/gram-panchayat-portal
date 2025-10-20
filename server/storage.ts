@@ -13,13 +13,19 @@ import {
   type InsertLeavingCertificate,
   type MarriageCertificate,
   type InsertMarriageCertificate,
+  type Property,
+  type InsertProperty,
+  type PropertyPayment,
+  type InsertPropertyPayment,
   users,
   complaints,
   birthCertificates,
   deathCertificates,
   announcements,
   leavingCertificates,
-  marriageCertificates
+  marriageCertificates,
+  properties,
+  propertyPayments
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -583,6 +589,55 @@ export class DbStorage implements IStorage {
   async deleteMarriageCertificate(id: string): Promise<boolean> {
     const result = await this.db.delete(marriageCertificates).where(eq(marriageCertificates.id, id)).returning();
     return result.length > 0;
+  }
+
+  // Property Tax Methods
+  async getPropertyByNumber(propertyNumber: string): Promise<Property | undefined> {
+    const result = await this.db.select().from(properties).where(eq(properties.propertyNumber, propertyNumber));
+    return result[0];
+  }
+
+  async getAllProperties(): Promise<Property[]> {
+    return await this.db.select().from(properties);
+  }
+
+  async createProperty(property: InsertProperty): Promise<Property> {
+    const result = await this.db.insert(properties).values(property).returning();
+    return result[0];
+  }
+
+  async getPropertyPayments(propertyNumber: string): Promise<PropertyPayment[]> {
+    return await this.db.select().from(propertyPayments)
+      .where(eq(propertyPayments.propertyNumber, propertyNumber))
+      .orderBy(propertyPayments.paymentYear);
+  }
+
+  async createPropertyPayment(payment: InsertPropertyPayment): Promise<PropertyPayment> {
+    const result = await this.db.insert(propertyPayments).values(payment).returning();
+    return result[0];
+  }
+
+  async getPendingPayments(): Promise<PropertyPayment[]> {
+    return await this.db.select().from(propertyPayments)
+      .where(eq(propertyPayments.status, 'pending'))
+      .orderBy(desc(propertyPayments.createdAt));
+  }
+
+  async getAllPayments(): Promise<PropertyPayment[]> {
+    return await this.db.select().from(propertyPayments)
+      .orderBy(desc(propertyPayments.createdAt));
+  }
+
+  async updatePaymentStatus(id: string, status: string, verifiedBy: string): Promise<PropertyPayment> {
+    const result = await this.db.update(propertyPayments)
+      .set({ 
+        status, 
+        verifiedBy,
+        verifiedAt: new Date()
+      })
+      .where(eq(propertyPayments.id, id))
+      .returning();
+    return result[0];
   }
 }
 

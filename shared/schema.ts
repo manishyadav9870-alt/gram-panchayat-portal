@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, numeric, date } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -248,3 +248,50 @@ export const insertMarriageCertificateSchema = createInsertSchema(marriageCertif
 
 export type InsertMarriageCertificate = z.infer<typeof insertMarriageCertificateSchema>;
 export type MarriageCertificate = typeof marriageCertificates.$inferSelect;
+
+// Property Tax Tables
+export const properties = pgTable("properties", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  propertyNumber: varchar("property_number", { length: 50 }).notNull().unique(),
+  ownerName: text("owner_name").notNull(),
+  ownerNameMr: text("owner_name_mr"),
+  address: text("address").notNull(),
+  addressMr: text("address_mr"),
+  areaSqft: integer("area_sqft").notNull(),
+  annualTax: numeric("annual_tax", { precision: 10, scale: 2 }).notNull(),
+  registrationYear: integer("registration_year").notNull(),
+  status: varchar("status", { length: 20 }).default("active"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const propertyPayments = pgTable("property_payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  propertyNumber: varchar("property_number", { length: 50 }).notNull(),
+  paymentYear: integer("payment_year").notNull(),
+  amountPaid: numeric("amount_paid", { precision: 10, scale: 2 }).notNull(),
+  paymentDate: date("payment_date").notNull(),
+  receiptNumber: varchar("receipt_number", { length: 50 }).notNull().unique(),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  remarks: text("remarks"),
+  status: varchar("status", { length: 20 }).default("pending"),
+  verifiedBy: varchar("verified_by", { length: 255 }),
+  verifiedAt: timestamp("verified_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPropertySchema = createInsertSchema(properties).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertPropertyPaymentSchema = createInsertSchema(propertyPayments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertProperty = z.infer<typeof insertPropertySchema>;
+export type Property = typeof properties.$inferSelect;
+export type InsertPropertyPayment = z.infer<typeof insertPropertyPaymentSchema>;
+export type PropertyPayment = typeof propertyPayments.$inferSelect;

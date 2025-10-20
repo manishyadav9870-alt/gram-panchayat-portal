@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles, UserCheck } from 'lucide-react';
+import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles, UserCheck, Building2 } from 'lucide-react';
 
 export default function Services() {
   const { t } = useLanguage();
@@ -61,6 +61,16 @@ export default function Services() {
       buttonEn: 'Admin Only',
       buttonMr: 'केवळ प्रशासक',
       adminOnly: true,
+    },
+    {
+      icon: Building2,
+      titleEn: 'Property Tax',
+      titleMr: 'घरपट्टी',
+      descEn: 'View property tax details, payment history and download receipts online.',
+      descMr: 'मालमत्ता कर तपशील, भुगतान इतिहास पहा आणि पावती डाउनलोड करा.',
+      path: '/services/property-tax',
+      buttonEn: 'View Details',
+      buttonMr: 'तपशील पहा',
     },
     {
       icon: Users,
