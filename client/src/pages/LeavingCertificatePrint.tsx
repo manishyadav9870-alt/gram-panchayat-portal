@@ -95,61 +95,75 @@ export default function LeavingCertificatePrint() {
     <div className="p-8 bg-white print:p-0">
       <style>{`
         @media print {
-          @page { margin: 15mm; }
-          body { margin: 0; padding: 0; }
+          @page { 
+            size: A4 portrait;
+            margin: 8mm;
+          }
+          body { 
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .certificate-wrapper {
+            page-break-inside: avoid !important;
+            transform: scale(0.88) !important;
+            transform-origin: top center !important;
+          }
         }
         .header {
           text-align: left;
-          margin-bottom: 20px;
+          margin-bottom: 12px;
           border-bottom: 2px solid black;
-          padding-bottom: 10px;
+          padding-bottom: 6px;
         }
         .header p {
-          font-size: 11px;
+          font-size: 10px;
           margin: 0;
+          line-height: 1.3;
         }
         .office-section {
-          margin: 20px 0;
+          margin: 12px 0;
         }
         .office-line {
-          margin: 5px 0;
-          font-size: 14px;
+          margin: 3px 0;
+          font-size: 13px;
+          line-height: 1.4;
         }
         .title-section {
           text-align: center;
-          margin: 20px 0;
+          margin: 12px 0;
           border-top: 2px solid black;
           border-bottom: 2px solid black;
-          padding: 10px 0;
+          padding: 6px 0;
         }
         .title-section h3 {
-          margin: 5px 0;
-          font-size: 18px;
+          margin: 3px 0;
+          font-size: 16px;
           text-decoration: underline;
         }
         .dispatch-section {
           display: flex;
           justify-content: space-between;
-          margin: 20px 0;
-          font-size: 14px;
+          margin: 12px 0;
+          font-size: 13px;
         }
         .content-line {
-          margin: 15px 0;
-          font-size: 14px;
-          line-height: 1.8;
+          margin: 10px 0;
+          font-size: 13px;
+          line-height: 1.6;
         }
         .signature-section {
           display: flex;
           justify-content: space-between;
-          margin-top: 60px;
+          margin-top: 40px;
         }
         .page-number {
           text-align: right;
-          margin-top: 40px;
-          font-size: 12px;
+          margin-top: 25px;
+          font-size: 11px;
         }
       `}</style>
 
+      <div className="certificate-wrapper">
       <div className="header">
         <p>शासन निर्णय क्रमांक: आरटीआइ-२०१५/प्र.क्र.३२/पि.स.-५, दिनांक १५ जुलै, २०१५</p>
       </div>
@@ -233,6 +247,7 @@ export default function LeavingCertificatePrint() {
 
       <div className="page-number">
         पृष्ठ २२ पैकी १५
+      </div>
       </div>
     </div>
   );

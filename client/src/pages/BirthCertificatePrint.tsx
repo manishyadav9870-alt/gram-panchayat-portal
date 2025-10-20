@@ -93,8 +93,30 @@ export default function BirthCertificatePrint() {
     <div className="min-h-screen bg-white p-8 print:p-0">
       <style>{`
         @media print {
-          @page { margin: 0; }
-          body { margin: 1cm; }
+          @page { 
+            size: A4 portrait;
+            margin: 0.3cm;
+          }
+          body { 
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .certificate-container {
+            page-break-inside: avoid !important;
+            page-break-after: avoid !important;
+            transform: scale(0.85) !important;
+            transform-origin: top center !important;
+            padding: 1rem !important;
+            margin: 0 auto !important;
+          }
+          .print-compact {
+            font-size: 0.75rem !important;
+            line-height: 1.2 !important;
+          }
+          .print-compact-xs {
+            font-size: 0.65rem !important;
+            line-height: 1.1 !important;
+          }
         }
       `}</style>
       
@@ -115,48 +137,48 @@ export default function BirthCertificatePrint() {
       </div>
 
       {/* Certificate Container */}
-      <div className="max-w-4xl mx-auto border-4 border-black p-8">
+      <div className="certificate-container max-w-4xl mx-auto border-4 border-black p-8 print:p-4">
         {/* Header */}
-        <div className="text-center mb-4 border-b-2 border-black pb-2">
+        <div className="text-center mb-3 print:mb-2 border-b-2 border-black pb-1 print-compact-xs">
           <div className="text-sm">शासन निर्णय क्रमांक: आरटीएस-२०१५/प्र.क्र.३२/पं.रा-५, दिनांक १४ जुलै, २०१५</div>
         </div>
 
         {/* Certificate Number */}
-        <div className="text-right text-sm mb-4">
+        <div className="text-right text-sm mb-3 print:mb-2 print-compact-xs">
           प्रमाणपत्र क्र./Certificate No. <span className="ml-16">नमुना १/Form ४</span>
         </div>
 
         {/* Government Header */}
-        <div className="flex items-start gap-6 mb-6">
+        <div className="flex items-start gap-4 mb-3 print:mb-2 print:gap-2">
           {/* Emblem */}
-          <div className="w-24 h-24 flex-shrink-0 border-2 border-gray-300 flex items-center justify-center">
+          <div className="w-20 h-20 print:w-16 print:h-16 flex-shrink-0 border-2 border-gray-300 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-4xl">⚖️</div>
-              <div className="text-xs mt-1">सत्यमेव जयते</div>
+              <div className="text-3xl print:text-2xl">⚖️</div>
+              <div className="text-xs">सत्यमेव जयते</div>
             </div>
           </div>
 
           {/* Title */}
-          <div className="flex-1 text-center">
-            <h1 className="text-2xl font-bold mb-1">महाराष्ट्र शासन</h1>
-            <h2 className="text-xl mb-1">Government of Maharashtra</h2>
-            <h3 className="text-lg mb-1">आरोग्य विभाग</h3>
-            <h4 className="text-lg">Health Department</h4>
+          <div className="flex-1 text-center print-compact">
+            <h1 className="text-2xl print:text-lg font-bold mb-1 print:mb-0">महाराष्ट्र शासन</h1>
+            <h2 className="text-xl print:text-base mb-1 print:mb-0">Government of Maharashtra</h2>
+            <h3 className="text-lg print:text-sm mb-1 print:mb-0">आरोग्य विभाग</h3>
+            <h4 className="text-lg print:text-sm">Health Department</h4>
           </div>
         </div>
 
         {/* Issuing Authority */}
-        <div className="text-center mb-4 text-sm">
+        <div className="text-center mb-2 print:mb-1 text-sm print-compact-xs">
           <div>प्रमाणपत्र निर्गमित करणारा स्थानिक प्राधिकरण नाव _________________</div>
           <div>Name of the local body issuing Certificate _________________</div>
         </div>
 
         {/* Main Title */}
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold">जन्म प्रमाणपत्र / BIRTH CERTIFICATE</h2>
+        <div className="text-center mb-3 print:mb-2">
+          <h2 className="text-2xl print:text-lg font-bold">जन्म प्रमाणपत्र / BIRTH CERTIFICATE</h2>
         </div>
 
-        <div className="text-xs mb-4 leading-relaxed">
+        <div className="text-xs mb-2 print:mb-1 leading-snug print-compact-xs">
           (जन्म व मृत्यू नोंदणी अधिनियम, १९६९ चा कलम १२/१७ आणि महाराष्ट्र जन्म व मृत्यू नोंदणी नियम २००० चा २/१३ अन्वये देण्यात आले आहे.)
           <br />
           (Issued under section १२/१७ of the Registration of Births & Deaths Act, १९६९ and rule २/१३ of the Maharashtra Registration of Births and Death Rules २०००)
@@ -169,7 +191,7 @@ export default function BirthCertificatePrint() {
         </div>
 
         {/* Certificate Details - Side by Side Format */}
-        <div className="space-y-2 text-sm mb-6">
+        <div className="space-y-1 print:space-y-0.5 text-sm mb-3 print:mb-2 print-compact">
           {/* Row 1: Aadhar Card */}
           <div className="grid grid-cols-2 gap-8">
             <div className="flex gap-2">
@@ -300,19 +322,19 @@ export default function BirthCertificatePrint() {
         </div>
 
         {/* Remarks */}
-        <div className="mb-6 text-sm">
-          <div className="flex justify-between border-b border-gray-300 pb-1 mb-2">
+        <div className="mb-2 print:mb-1 text-sm print-compact">
+          <div className="flex justify-between border-b border-gray-300 pb-1 mb-1">
             <span>शेरा:</span>
             <span className="font-semibold">{certificate.remarksMr || 'ok'}</span>
           </div>
-          <div className="flex justify-between border-b border-gray-300 pb-1 mb-2">
+          <div className="flex justify-between border-b border-gray-300 pb-1 mb-1">
             <span>Remarks (if any):</span>
             <span className="font-semibold">{certificate.remarksEn || 'ok'}</span>
           </div>
         </div>
 
         {/* Issue Details */}
-        <div className="grid grid-cols-2 gap-8 text-sm mb-6">
+        <div className="grid grid-cols-2 gap-8 text-sm mb-2 print:mb-1 print-compact">
           <div>
             <div className="border-b border-gray-300 pb-1 mb-2">
               <span>प्रमाणपत्र निर्गमित दिनांक:</span>

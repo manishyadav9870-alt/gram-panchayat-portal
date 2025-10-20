@@ -61,17 +61,30 @@ export default function MarriageCertificatePrint() {
     <div className="p-8 bg-white print:p-0">
       <style>{`
         @media print {
-          @page { margin: 15mm; size: A4; }
-          body { margin: 0; padding: 0; }
+          @page { 
+            margin: 8mm;
+            size: A4 portrait;
+          }
+          body { 
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .certificate-wrapper {
+            page-break-inside: avoid !important;
+            transform: scale(0.87) !important;
+            transform-origin: top center !important;
+          }
         }
-        .cert-border { border: 3px solid black; padding: 20px; }
-        .header-text { font-size: 11px; text-align: center; margin-bottom: 10px; }
-        .title { font-size: 18px; font-weight: bold; text-align: center; margin: 10px 0; }
-        .subtitle { font-size: 14px; text-align: center; margin: 5px 0; }
-        .content { font-size: 13px; line-height: 1.8; margin: 10px 0; }
-        .photo-box { width: 100px; height: 120px; border: 2px solid black; display: inline-block; text-align: center; padding-top: 50px; }
+        .cert-border { border: 3px solid black; padding: 12px; }
+        .header-text { font-size: 10px; text-align: center; margin-bottom: 8px; line-height: 1.3; }
+        .title { font-size: 16px; font-weight: bold; text-align: center; margin: 6px 0; }
+        .subtitle { font-size: 12px; text-align: center; margin: 3px 0; }
+        .content { font-size: 12px; line-height: 1.5; margin: 6px 0; }
+        .content p { margin: 2px 0; }
+        .photo-box { width: 80px; height: 100px; border: 2px solid black; display: inline-block; text-align: center; padding-top: 40px; font-size: 11px; }
       `}</style>
 
+      <div className="certificate-wrapper">
       <div className="cert-border">
         <div className="header-text">
           शासन निर्णय क्रमांक: आरटीआय-२०१५/प्र.क्र.३२/पि.स.-५, दिनांक १४ जुलै, २०१५
@@ -134,7 +147,7 @@ export default function MarriageCertificatePrint() {
           <p style={{ color: '#0066cc' }}>Date :- {formatDate(certificate.issueDate)}</p>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '40px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '25px' }}>
           <div>
             <p>दिठकाण : {certificate.placeOfIssue}</p>
             <p>Place : {certificate.placeOfIssue}</p>
@@ -147,14 +160,15 @@ export default function MarriageCertificatePrint() {
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '30px', fontSize: '12px' }}>
+        <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '11px' }}>
           <p>शिक्का / Seal</p>
-          <p style={{ marginTop: '20px' }}>अर्जदाराची सही / अंगठा / Applicant Signature</p>
+          <p style={{ marginTop: '15px' }}>अर्जदाराची सही / अंगठा / Applicant Signature</p>
         </div>
 
-        <div style={{ textAlign: 'right', marginTop: '20px', fontSize: '11px' }}>
+        <div style={{ textAlign: 'right', marginTop: '15px', fontSize: '10px' }}>
           पृष्ठ २२ पैकी ११
         </div>
+      </div>
       </div>
     </div>
   );
