@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LogOut, FileText, Baby, Skull, Megaphone, Plus, Menu, X, LayoutDashboard, Home, Users, UserCog, UserCheck, Heart, Building2 } from 'lucide-react';
+import { LogOut, FileText, Baby, Skull, Megaphone, Plus, Menu, X, LayoutDashboard, Home, Users, UserCog, UserCheck, Heart, Building2, Droplets } from 'lucide-react';
 import ComplaintsTable from '@/components/admin/ComplaintsTable';
 import BirthCertificatesTable from '@/components/admin/BirthCertificatesTable';
 import DeathCertificatesTable from '@/components/admin/DeathCertificatesTable';
@@ -13,6 +13,7 @@ import MarriageCertificatesTable from '@/components/admin/MarriageCertificatesTa
 import AnnouncementsTable from '@/components/admin/AnnouncementsTable';
 import UsersTable from '@/components/admin/UsersTable';
 import PropertyTaxAdmin from '@/components/admin/PropertyTaxAdmin';
+import WaterBillUpload from '@/components/admin/WaterBillUpload';
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -42,6 +43,7 @@ export default function AdminDashboard() {
     { icon: LayoutDashboard, label: 'Dashboard', value: 'complaints' },
     { icon: FileText, label: 'Complaints', value: 'complaints' },
     { icon: Building2, label: 'Property Tax', value: 'property-tax' },
+    { icon: Droplets, label: 'Water Bill', value: 'water-bill' },
     { icon: Baby, label: 'Birth Certificates', value: 'birth' },
     { icon: Skull, label: 'Death Certificates', value: 'death' },
     { icon: UserCheck, label: 'Leaving Certificates', value: 'leaving' },
@@ -269,6 +271,10 @@ export default function AdminDashboard() {
 
           {activeTab === 'property-tax' && (
             <PropertyTaxAdmin />
+          )}
+
+          {activeTab === 'water-bill' && (
+            <WaterBillUpload />
           )}
 
           {activeTab === 'announcements' && (

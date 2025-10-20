@@ -31,6 +31,7 @@ import LeavingCertificatePrint from "@/pages/LeavingCertificatePrint";
 import MarriageCertificateForm from "@/pages/MarriageCertificateForm";
 import MarriageCertificatesList from "@/pages/MarriageCertificatesList";
 import MarriageCertificatePrint from "@/pages/MarriageCertificatePrint";
+import WaterBillCheck from "@/pages/WaterBillCheck";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -47,6 +48,7 @@ function Router() {
       {/* Public Service Routes - No Login Required */}
       <Route path="/services/complaint" component={ComplaintService} />
       <Route path="/services/property-tax" component={PropertyTaxService} />
+      <Route path="/services/water-bill" component={WaterBillCheck} />
       
       {/* Birth & Death Certificate - Admin Only */}
       <Route path="/services/birth-certificate">

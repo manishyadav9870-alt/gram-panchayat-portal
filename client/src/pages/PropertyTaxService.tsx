@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Building2, Search, Download, Calendar, IndianRupee, MapPin, User, FileText } from 'lucide-react';
+import { Search, Building2, Calendar, IndianRupee, CheckCircle, XCircle, Clock, CreditCard, QrCode, Download, Home, MapPin, User, FileText } from 'lucide-react';
 
 interface PropertyDetails {
   propertyNumber: string;
@@ -80,6 +80,16 @@ export default function PropertyTaxService() {
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-orange-600 to-orange-700 text-white py-16">
           <div className="container mx-auto px-4 max-w-4xl">
+            <div className="flex justify-end mb-4">
+              <Button 
+                onClick={() => window.location.href = '/'}
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+              >
+                <Home className="h-4 w-4" />
+              </Button>
+            </div>
             <div className="text-center">
               <div className="inline-block p-4 bg-white/10 rounded-full mb-4">
                 <Building2 className="h-12 w-12" />

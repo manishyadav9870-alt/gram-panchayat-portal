@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, Download, FileSpreadsheet, CheckCircle, XCircle, FileText } from 'lucide-react';
+import { Upload, FileSpreadsheet, CheckCircle, XCircle, FileText } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
-export default function PropertyUpload() {
+export default function WaterConnectionUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
@@ -27,23 +27,20 @@ export default function PropertyUpload() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('/api/admin/properties/upload', {
+      const response = await fetch('/api/admin/water/connections/upload', {
         method: 'POST',
         body: formData,
         credentials: 'include',
       });
 
       const result = await response.json();
-      console.log('Upload response:', result);
       
       if (response.ok) {
         setResult(result);
         setFile(null);
-        // Reset file input
-        const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+        const fileInput = document.getElementById('water-file-upload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
       } else {
-        console.error('Upload failed:', result);
         alert(result.message || 'Upload failed');
       }
     } catch (error) {
@@ -56,42 +53,40 @@ export default function PropertyUpload() {
 
   const downloadTemplate = (format: 'csv' | 'excel') => {
     const headers = [
-      'property_number',
-      'owner_name',
-      'owner_name_mr',
+      'connection_number',
+      'house_number',
+      'consumer_name',
+      'consumer_name_mr',
       'address',
       'address_mr',
-      'area_sqft',
-      'annual_tax',
-      'registration_year'
+      'monthly_charge',
+      'connection_date'
     ];
     
     const sampleData = [
-      'GP/2025/004',
-      'John Doe',
-      'जॉन डो',
-      'Main Street Kishore',
-      'मुख्य रस्ता किशोर',
-      '1200',
-      '6000',
-      '2025'
+      'WC/2025/001',
+      'घर पट्टी-123',
+      'राम कुमार',
+      'राम कुमार',
+      'Main Road, Kishore',
+      'मुख्य रस्ता, किशोर',
+      '200',
+      '2025-01-01'
     ];
 
     if (format === 'excel') {
-      // Create Excel file
       const ws = XLSX.utils.aoa_to_sheet([headers, sampleData]);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Properties');
-      XLSX.writeFile(wb, 'property_tax_template.xlsx');
+      XLSX.utils.book_append_sheet(wb, ws, 'WaterConnections');
+      XLSX.writeFile(wb, 'water_connections_template.xlsx');
     } else {
-      // Create CSV template with UTF-8 BOM for proper encoding
       const BOM = '\uFEFF';
       const csv = BOM + [headers.join(','), sampleData.join(',')].join('\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'property_tax_template.csv';
+      a.download = 'water_connections_template.csv';
       a.click();
       window.URL.revokeObjectURL(url);
     }
@@ -102,7 +97,7 @@ export default function PropertyUpload() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="h-5 w-5" />
-          Bulk Property Upload
+          Bulk Water Connection Upload
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -113,7 +108,7 @@ export default function PropertyUpload() {
             Step 1: Download Template
           </h3>
           <p className="text-sm text-gray-600 mb-3">
-            Download the template and fill in your property data
+            Download the template and fill in water connection data
           </p>
           <div className="flex gap-2">
             <Button onClick={() => downloadTemplate('excel')} variant="outline" size="sm" className="flex-1">
@@ -139,7 +134,7 @@ export default function PropertyUpload() {
           
           <div className="space-y-3">
             <input
-              id="file-upload"
+              id="water-file-upload"
               type="file"
               accept=".csv,.xlsx,.xls"
               onChange={handleFileChange}
@@ -147,8 +142,8 @@ export default function PropertyUpload() {
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-full file:border-0
                 file:text-sm file:font-semibold
-                file:bg-orange-50 file:text-orange-700
-                hover:file:bg-orange-100"
+                file:bg-blue-50 file:text-blue-700
+                hover:file:bg-blue-100"
             />
             
             {file && (
@@ -161,9 +156,9 @@ export default function PropertyUpload() {
             <Button 
               onClick={handleUpload} 
               disabled={!file || uploading}
-              className="w-full bg-green-600 hover:bg-green-700"
+              className="w-full bg-blue-600 hover:bg-blue-700"
             >
-              {uploading ? 'Uploading...' : 'Upload Properties'}
+              {uploading ? 'Uploading...' : 'Upload Connections'}
             </Button>
           </div>
         </div>
@@ -173,7 +168,7 @@ export default function PropertyUpload() {
           <div className="bg-blue-50 border-2 border-blue-200 p-6 rounded-lg">
             <div className="flex items-center justify-center gap-3">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <span className="text-lg font-semibold text-blue-700">Uploading properties...</span>
+              <span className="text-lg font-semibold text-blue-700">Uploading connections...</span>
             </div>
           </div>
         )}
@@ -199,7 +194,7 @@ export default function PropertyUpload() {
               <div className="flex items-center gap-3 bg-white p-3 rounded border">
                 <CheckCircle className="h-6 w-6 text-green-600" />
                 <span className="text-lg font-semibold text-green-700">
-                  {result.success} properties uploaded successfully
+                  {result.success} connections uploaded successfully
                 </span>
               </div>
               
@@ -207,7 +202,7 @@ export default function PropertyUpload() {
                 <div className="flex items-center gap-3 bg-white p-3 rounded border">
                   <XCircle className="h-6 w-6 text-red-600" />
                   <span className="text-lg font-semibold text-red-700">
-                    {result.failed} properties failed
+                    {result.failed} connections failed
                   </span>
                 </div>
               )}
@@ -234,12 +229,10 @@ export default function PropertyUpload() {
           <p className="font-semibold mb-2">File Format Instructions:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-700">
             <li>Both CSV and Excel (.xlsx) formats are supported</li>
-            <li>First row should be headers (as shown in template)</li>
-            <li>Property number must be unique (e.g., GP/2025/004)</li>
-            <li>Area should be in square feet (numbers only)</li>
-            <li>Annual tax should be in rupees (numbers only)</li>
-            <li>Registration year should be 4-digit year (e.g., 2025)</li>
-            <li>For CSV: Use comma (,) as separator</li>
+            <li>Connection number must be unique (e.g., WC/2025/001)</li>
+            <li>House number format: घर पट्टी-123</li>
+            <li>Monthly charge should be in rupees (e.g., 200)</li>
+            <li>Connection date format: YYYY-MM-DD (e.g., 2025-01-01)</li>
           </ul>
         </div>
       </CardContent>

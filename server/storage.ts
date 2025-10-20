@@ -17,6 +17,8 @@ import {
   type InsertProperty,
   type PropertyPayment,
   type InsertPropertyPayment,
+  type WaterPayment,
+  type InsertWaterPayment,
   users,
   complaints,
   birthCertificates,
@@ -25,13 +27,14 @@ import {
   leavingCertificates,
   marriageCertificates,
   properties,
-  propertyPayments
+  propertyPayments,
+  waterPayments
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pkg from 'pg';
 const { Pool } = pkg;
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -77,6 +80,24 @@ export interface IStorage {
   getAllAnnouncements(): Promise<Announcement[]>;
   createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement>;
   deleteAnnouncement(id: string): Promise<boolean>;
+  
+  // Property Tax methods
+  getPropertyByNumber(propertyNumber: string): Promise<Property | undefined>;
+  getAllProperties(): Promise<Property[]>;
+  createProperty(property: InsertProperty): Promise<Property>;
+  getPropertyPayments(propertyNumber: string): Promise<PropertyPayment[]>;
+  createPropertyPayment(payment: InsertPropertyPayment): Promise<PropertyPayment>;
+  getPendingPayments(): Promise<PropertyPayment[]>;
+  getAllPayments(): Promise<PropertyPayment[]>;
+  updatePaymentStatus(id: string, status: string, verifiedBy: string): Promise<PropertyPayment>;
+  
+  // Water Bill methods (uses properties table as master)
+  getWaterPaymentsByProperty(propertyNumber: string): Promise<WaterPayment[]>;
+  createWaterPayment(payment: InsertWaterPayment): Promise<WaterPayment>;
+  getPendingWaterPayments(): Promise<WaterPayment[]>;
+  getAllWaterPayments(): Promise<WaterPayment[]>;
+  updateWaterPaymentStatus(id: string, status: string, verifiedBy: string, receiptNumber?: string, paymentDate?: string, paymentMethod?: string): Promise<WaterPayment>;
+  getWaterPaymentByMonth(propertyNumber: string, paymentMonth: string): Promise<WaterPayment | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -333,6 +354,52 @@ export class MemStorage implements IStorage {
 
   async deleteAnnouncement(id: string): Promise<boolean> {
     return this.announcements.delete(id);
+  }
+
+  // Property Tax stub methods (not used in production - using DbStorage)
+  async getPropertyByNumber(propertyNumber: string): Promise<Property | undefined> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async getAllProperties(): Promise<Property[]> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async createProperty(property: InsertProperty): Promise<Property> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async getPropertyPayments(propertyNumber: string): Promise<PropertyPayment[]> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async createPropertyPayment(payment: InsertPropertyPayment): Promise<PropertyPayment> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async getPendingPayments(): Promise<PropertyPayment[]> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async getAllPayments(): Promise<PropertyPayment[]> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+  async updatePaymentStatus(id: string, status: string, verifiedBy: string): Promise<PropertyPayment> {
+    throw new Error("MemStorage not implemented for Property Tax");
+  }
+
+  // Water Bill stub methods (not used in production - using DbStorage)
+  async getWaterPaymentsByProperty(propertyNumber: string): Promise<WaterPayment[]> {
+    throw new Error("MemStorage not implemented for Water Bill");
+  }
+  async createWaterPayment(payment: InsertWaterPayment): Promise<WaterPayment> {
+    throw new Error("MemStorage not implemented for Water Bill");
+  }
+  async getPendingWaterPayments(): Promise<WaterPayment[]> {
+    throw new Error("MemStorage not implemented for Water Bill");
+  }
+  async getAllWaterPayments(): Promise<WaterPayment[]> {
+    throw new Error("MemStorage not implemented for Water Bill");
+  }
+  async updateWaterPaymentStatus(id: string, status: string, verifiedBy: string, receiptNumber?: string, paymentDate?: string, paymentMethod?: string): Promise<WaterPayment> {
+    throw new Error("MemStorage not implemented for Water Bill");
+  }
+  async getWaterPaymentByMonth(propertyNumber: string, paymentMonth: string): Promise<WaterPayment | undefined> {
+    throw new Error("MemStorage not implemented for Water Bill");
   }
 }
 
@@ -637,6 +704,59 @@ export class DbStorage implements IStorage {
       })
       .where(eq(propertyPayments.id, id))
       .returning();
+    return result[0];
+  }
+
+  // Water Bill Methods (uses properties table as master)
+  async getWaterPaymentsByProperty(propertyNumber: string): Promise<WaterPayment[]> {
+    return await this.db.select().from(waterPayments)
+      .where(eq(waterPayments.propertyNumber, propertyNumber))
+      .orderBy(desc(waterPayments.paymentMonth));
+  }
+
+  async createWaterPayment(payment: InsertWaterPayment): Promise<WaterPayment> {
+    const result = await this.db.insert(waterPayments).values(payment).returning();
+    return result[0];
+  }
+
+  async getPendingWaterPayments(): Promise<WaterPayment[]> {
+    return await this.db.select().from(waterPayments)
+      .where(eq(waterPayments.status, 'pending'))
+      .orderBy(desc(waterPayments.createdAt));
+  }
+
+  async getAllWaterPayments(): Promise<WaterPayment[]> {
+    return await this.db.select().from(waterPayments)
+      .orderBy(desc(waterPayments.createdAt));
+  }
+
+  async updateWaterPaymentStatus(id: string, status: string, verifiedBy: string, receiptNumber?: string, paymentDate?: string, paymentMethod?: string): Promise<WaterPayment> {
+    const updateData: any = { 
+      status, 
+      verifiedBy,
+      verifiedAt: new Date()
+    };
+    
+    // Add receipt number and payment details if provided
+    if (receiptNumber) updateData.receiptNumber = receiptNumber;
+    if (paymentDate) updateData.paymentDate = paymentDate;
+    if (paymentMethod) updateData.paymentMethod = paymentMethod;
+    
+    const result = await this.db.update(waterPayments)
+      .set(updateData)
+      .where(eq(waterPayments.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getWaterPaymentByMonth(propertyNumber: string, paymentMonth: string): Promise<WaterPayment | undefined> {
+    const result = await this.db.select().from(waterPayments)
+      .where(
+        and(
+          eq(waterPayments.propertyNumber, propertyNumber),
+          eq(waterPayments.paymentMonth, paymentMonth)
+        )
+      );
     return result[0];
   }
 }

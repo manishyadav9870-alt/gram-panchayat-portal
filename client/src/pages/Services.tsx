@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ServiceCard from '@/components/ServiceCard';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles, UserCheck, Building2 } from 'lucide-react';
+import { FileText, AlertCircle, Heart, CreditCard, FileCheck, Home, IndianRupee, Users, Sparkles, UserCheck, Building2, Droplets } from 'lucide-react';
 
 export default function Services() {
   const { t } = useLanguage();
@@ -71,6 +71,16 @@ export default function Services() {
       path: '/services/property-tax',
       buttonEn: 'View Details',
       buttonMr: 'तपशील पहा',
+    },
+    {
+      icon: Droplets,
+      titleEn: 'Water Bill',
+      titleMr: 'पाणी बिल',
+      descEn: 'Check water bill, view payment history and pending bills by house number.',
+      descMr: 'घर पट्टी नंबरानुसार पाणी बिल, भुगतान इतिहास आणि बाकी बिल पहा.',
+      path: '/services/water-bill',
+      buttonEn: 'Check Bill',
+      buttonMr: 'बिल पहा',
     },
     {
       icon: Users,

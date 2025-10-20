@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import multer from "multer";
 import csv from "csv-parser";
+import * as XLSX from "xlsx";
 import { Readable } from "stream";
 import { storage } from "./storage";
 import { generateBirthCertificatePDF, generateDeathCertificatePDF } from "./pdfGenerator";
@@ -46,17 +47,26 @@ const upload = multer({
   },
 });
 
-// Multer configuration for CSV uploads
+// Multer configuration for CSV and Excel uploads
 const uploadCSV = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype === "text/csv" || file.originalname.endsWith('.csv')) {
+    const allowedMimes = [
+      "text/csv",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    ];
+    const allowedExtensions = ['.csv', '.xlsx', '.xls'];
+    const hasValidMime = allowedMimes.includes(file.mimetype);
+    const hasValidExtension = allowedExtensions.some(ext => file.originalname.toLowerCase().endsWith(ext));
+    
+    if (hasValidMime || hasValidExtension) {
       cb(null, true);
     } else {
-      cb(new Error("Only CSV files are allowed"));
+      cb(new Error("Only CSV and Excel files are allowed"));
     }
   },
 });
@@ -814,7 +824,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // CSV Upload for bulk property import
+  // CSV/Excel Upload for bulk property import
   app.post("/api/admin/properties/upload", requireAuth, uploadCSV.single('file'), async (req, res) => {
     try {
       if (!req.file) {
@@ -826,88 +836,510 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let successCount = 0;
       let failedCount = 0;
 
-      // Parse CSV - Remove BOM if present
-      let csvContent = req.file.buffer.toString('utf8');
-      // Remove UTF-8 BOM
-      if (csvContent.charCodeAt(0) === 0xFEFF) {
-        csvContent = csvContent.slice(1);
-      }
-      const stream = Readable.from(csvContent);
-      
-      stream
-        .pipe(csv())
-        .on('data', (row) => {
-          results.push(row);
-        })
-        .on('end', async () => {
-          console.log('CSV parsed, total rows:', results.length);
-          if (results.length > 0) {
-            console.log('First row keys:', Object.keys(results[0]));
-            console.log('First row data:', results[0]);
-          }
+      // Determine file type and parse accordingly
+      const isExcel = req.file.originalname.toLowerCase().endsWith('.xlsx') || 
+                      req.file.originalname.toLowerCase().endsWith('.xls');
 
-          // Process each row
-          for (let i = 0; i < results.length; i++) {
-            const row = results[i];
-            try {
-              // Skip empty rows
-              if (!row.property_number && !row.owner_name) {
-                continue;
-              }
-
-              // Validate required fields
-              const missingFields = [];
-              if (!row.property_number?.trim()) missingFields.push('property_number');
-              if (!row.owner_name?.trim()) missingFields.push('owner_name');
-              if (!row.address?.trim()) missingFields.push('address');
-              if (!row.area_sqft?.trim()) missingFields.push('area_sqft');
-              if (!row.annual_tax?.trim()) missingFields.push('annual_tax');
-              if (!row.registration_year?.trim()) missingFields.push('registration_year');
-
-              if (missingFields.length > 0) {
-                errors.push(`Row ${i + 2}: Missing fields: ${missingFields.join(', ')}`);
-                failedCount++;
-                continue;
-              }
-
-              // Create property object
-              const propertyData = {
-                propertyNumber: row.property_number.trim(),
-                ownerName: row.owner_name.trim(),
-                ownerNameMr: row.owner_name_mr?.trim() || null,
-                address: row.address.trim(),
-                addressMr: row.address_mr?.trim() || null,
-                areaSqft: parseInt(row.area_sqft),
-                annualTax: parseFloat(row.annual_tax).toString(),
-                registrationYear: parseInt(row.registration_year),
-                status: 'active'
-              };
-
-              // Insert into database
-              await storage.createProperty(propertyData);
-              successCount++;
-            } catch (error: any) {
-              errors.push(`Row ${i + 2} (${row.property_number}): ${error.message}`);
-              failedCount++;
-            }
-          }
-
-          // Send response
-          res.json({
-            success: successCount,
-            failed: failedCount,
-            errors: errors
-          });
-        })
-        .on('error', (error) => {
-          console.error('CSV parsing error:', error);
-          res.status(500).json({ message: "Failed to parse CSV file" });
+      if (isExcel) {
+        // Parse Excel file
+        console.log('Parsing Excel file:', req.file.originalname);
+        const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        // Convert to JSON with header row
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+          raw: false, // Get formatted strings instead of raw values
+          defval: '' // Default value for empty cells
         });
+        
+        console.log('Excel parsed, total rows:', jsonData.length);
+        if (jsonData.length > 0) {
+          console.log('First row keys:', Object.keys(jsonData[0]));
+          console.log('First row data:', jsonData[0]);
+        }
+
+        // Process Excel rows
+        for (let i = 0; i < jsonData.length; i++) {
+          const row: any = jsonData[i];
+          try {
+            // Skip empty rows
+            if (!row.property_number && !row.owner_name) {
+              continue;
+            }
+
+            // Validate required fields
+            const missingFields = [];
+            if (!row.property_number?.toString().trim()) missingFields.push('property_number');
+            if (!row.owner_name?.toString().trim()) missingFields.push('owner_name');
+            if (!row.address?.toString().trim()) missingFields.push('address');
+            if (!row.area_sqft?.toString().trim()) missingFields.push('area_sqft');
+            if (!row.annual_tax?.toString().trim()) missingFields.push('annual_tax');
+            if (!row.registration_year?.toString().trim()) missingFields.push('registration_year');
+
+            if (missingFields.length > 0) {
+              errors.push(`Row ${i + 2}: Missing required fields: ${missingFields.join(', ')}`);
+              failedCount++;
+              continue;
+            }
+
+            // Create property object
+            const propertyData = {
+              propertyNumber: row.property_number.toString().trim(),
+              ownerName: row.owner_name.toString().trim(),
+              ownerNameMr: row.owner_name_mr?.toString().trim() || null,
+              address: row.address.toString().trim(),
+              addressMr: row.address_mr?.toString().trim() || null,
+              areaSqft: parseInt(row.area_sqft.toString()),
+              annualTax: parseFloat(row.annual_tax.toString()).toString(),
+              registrationYear: parseInt(row.registration_year.toString()),
+              status: 'active'
+            };
+
+            // Insert into database
+            await storage.createProperty(propertyData);
+            successCount++;
+          } catch (error: any) {
+            errors.push(`Row ${i + 2} (${row.property_number || 'unknown'}): ${error.message}`);
+            failedCount++;
+          }
+        }
+
+        // Send response
+        res.json({
+          success: successCount,
+          failed: failedCount,
+          errors: errors
+        });
+
+      } else {
+        // Parse CSV - Remove BOM if present
+        let csvContent = req.file.buffer.toString('utf8');
+        // Remove UTF-8 BOM
+        if (csvContent.charCodeAt(0) === 0xFEFF) {
+          csvContent = csvContent.slice(1);
+        }
+        const stream = Readable.from(csvContent);
+        
+        stream
+          .pipe(csv())
+          .on('data', (row) => {
+            results.push(row);
+          })
+          .on('end', async () => {
+            console.log('CSV parsed, total rows:', results.length);
+            if (results.length > 0) {
+              console.log('First row keys:', Object.keys(results[0]));
+              console.log('First row data:', results[0]);
+            }
+
+            // Process each row
+            for (let i = 0; i < results.length; i++) {
+              const row = results[i];
+              try {
+                // Skip empty rows
+                if (!row.property_number && !row.owner_name) {
+                  continue;
+                }
+
+                // Validate required fields
+                const missingFields = [];
+                if (!row.property_number?.trim()) missingFields.push('property_number');
+                if (!row.owner_name?.trim()) missingFields.push('owner_name');
+                if (!row.address?.trim()) missingFields.push('address');
+                if (!row.area_sqft?.trim()) missingFields.push('area_sqft');
+                if (!row.annual_tax?.trim()) missingFields.push('annual_tax');
+                if (!row.registration_year?.trim()) missingFields.push('registration_year');
+
+                if (missingFields.length > 0) {
+                  errors.push(`Row ${i + 2}: Missing required fields: ${missingFields.join(', ')}`);
+                  failedCount++;
+                  continue;
+                }
+
+                // Create property object
+                const propertyData = {
+                  propertyNumber: row.property_number.trim(),
+                  ownerName: row.owner_name.trim(),
+                  ownerNameMr: row.owner_name_mr?.trim() || null,
+                  address: row.address.trim(),
+                  addressMr: row.address_mr?.trim() || null,
+                  areaSqft: parseInt(row.area_sqft),
+                  annualTax: parseFloat(row.annual_tax).toString(),
+                  registrationYear: parseInt(row.registration_year),
+                  status: 'active'
+                };
+
+                // Insert into database
+                await storage.createProperty(propertyData);
+                successCount++;
+              } catch (error: any) {
+                errors.push(`Row ${i + 2} (${row.property_number || 'unknown'}): ${error.message}`);
+                failedCount++;
+              }
+            }
+
+            // Send response
+            res.json({
+              success: successCount,
+              failed: failedCount,
+              errors: errors
+            });
+          })
+          .on('error', (error) => {
+            console.error('CSV parsing error:', error);
+            res.status(500).json({ message: "Failed to parse CSV file" });
+          });
+      }
 
     } catch (error: any) {
       console.error('Upload error:', error);
       res.status(500).json({ 
         message: error.message || "Failed to upload properties" 
+      });
+    }
+  });
+
+  // ==================== WATER BILL ROUTES ====================
+  // Uses properties table as master - no separate water_connections table
+
+  // Get property and water payments by property number (Public)
+  app.get("/api/water/property/:propertyNumber", async (req, res) => {
+    try {
+      const { propertyNumber } = req.params;
+      
+      // Get property details from properties table
+      const property = await storage.getPropertyByNumber(propertyNumber);
+      
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      // Get water payment history
+      const payments = await storage.getWaterPaymentsByProperty(propertyNumber);
+      
+      res.json({
+        property,
+        payments
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch property details" 
+      });
+    }
+  });
+
+  // Record water payment (Admin)
+  app.post("/api/admin/water/payments", requireAuth, async (req, res) => {
+    try {
+      const { propertyNumber, paymentMonth, amount, paymentDate, paymentMethod, remarks } = req.body;
+      
+      // Verify property exists
+      const property = await storage.getPropertyByNumber(propertyNumber);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      
+      // Check if payment already exists for this month
+      const existingPayment = await storage.getWaterPaymentByMonth(propertyNumber, paymentMonth);
+      if (existingPayment) {
+        return res.status(400).json({ message: "Payment already recorded for this month" });
+      }
+
+      // Generate receipt number
+      const receiptNumber = `WB/${new Date().getFullYear()}/${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      
+      const payment = await storage.createWaterPayment({
+        propertyNumber,
+        paymentMonth,
+        amount: amount.toString(),
+        paymentDate,
+        receiptNumber,
+        paymentMethod,
+        remarks,
+        status: 'paid',
+        verifiedBy: req.session.username || 'admin',
+        verifiedAt: new Date()
+      });
+      
+      res.status(201).json(payment);
+    } catch (error: any) {
+      res.status(400).json({ 
+        message: error.message || "Failed to record payment" 
+      });
+    }
+  });
+
+  // Get pending water payments (Admin)
+  app.get("/api/admin/water/payments/pending", requireAuth, async (req, res) => {
+    try {
+      const payments = await storage.getPendingWaterPayments();
+      res.json(payments);
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch pending payments" 
+      });
+    }
+  });
+
+  // Get all water payments (Admin)
+  app.get("/api/admin/water/payments", requireAuth, async (req, res) => {
+    try {
+      const payments = await storage.getAllWaterPayments();
+      res.json(payments);
+    } catch (error: any) {
+      res.status(500).json({ 
+        message: error.message || "Failed to fetch payments" 
+      });
+    }
+  });
+
+  // Update water payment status (Admin)
+  app.patch("/api/admin/water/payments/:id/status", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const verifiedBy = req.session.username || 'admin';
+      
+      const payment = await storage.updateWaterPaymentStatus(id, status, verifiedBy);
+      res.json(payment);
+    } catch (error: any) {
+      res.status(400).json({ 
+        message: error.message || "Failed to update payment status" 
+      });
+    }
+  });
+
+  // Bulk payment allocation - pays oldest pending bills automatically
+  app.post("/api/admin/water/payments/bulk", async (req, res) => {
+    try {
+      const { propertyNumber, amount, paymentDate, receiptNumber, paymentMethod, remarks } = req.body;
+      
+      // Get all pending bills for this property, sorted by oldest first
+      const allPayments = await storage.getWaterPaymentsByProperty(propertyNumber);
+      const pendingBills = allPayments
+        .filter(p => p.status === 'pending')
+        .sort((a, b) => a.paymentMonth.localeCompare(b.paymentMonth));
+      
+      if (pendingBills.length === 0) {
+        return res.status(400).json({ message: "No pending bills found" });
+      }
+
+      let remainingAmount = parseFloat(amount);
+      let billsPaid = 0;
+      const monthlyCharge = 200; // Fixed monthly charge
+
+      // Allocate payment to oldest bills first (FIFO)
+      for (const bill of pendingBills) {
+        if (remainingAmount >= monthlyCharge) {
+          // Mark this bill as paid with receipt details
+          await storage.updateWaterPaymentStatus(
+            bill.id,
+            'paid',
+            req.session?.username || 'system',
+            `${receiptNumber}-${billsPaid + 1}`, // Unique receipt for each month
+            paymentDate,
+            paymentMethod
+          );
+
+          remainingAmount -= monthlyCharge;
+          billsPaid++;
+        } else {
+          break;
+        }
+      }
+
+      res.json({
+        success: true,
+        billsPaid,
+        amountUsed: parseFloat(amount) - remainingAmount,
+        remainingAmount,
+        message: `Successfully paid ${billsPaid} months`
+      });
+    } catch (error: any) {
+      console.error('Bulk payment error:', error);
+      res.status(400).json({ 
+        message: error.message || "Failed to process bulk payment" 
+      });
+    }
+  });
+
+  // Bulk upload water bills (Excel/CSV)
+  app.post("/api/admin/water/bills/upload", requireAuth, uploadCSV.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const results: any[] = [];
+      const errors: string[] = [];
+      let successCount = 0;
+      let failedCount = 0;
+
+      // Determine file type
+      const isExcel = req.file.originalname.toLowerCase().endsWith('.xlsx') || 
+                      req.file.originalname.toLowerCase().endsWith('.xls');
+
+      if (isExcel) {
+        // Parse Excel file
+        console.log('Parsing Excel file:', req.file.originalname);
+        const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { 
+          raw: false,
+          defval: ''
+        });
+        
+        console.log('Excel parsed, total rows:', jsonData.length);
+
+        // Process Excel rows
+        for (let i = 0; i < jsonData.length; i++) {
+          const row: any = jsonData[i];
+          try {
+            // Skip empty rows
+            if (!row.property_number && !row.payment_month) {
+              continue;
+            }
+
+            // Validate required fields
+            const missingFields = [];
+            if (!row.property_number?.toString().trim()) missingFields.push('property_number');
+            if (!row.payment_month?.toString().trim()) missingFields.push('payment_month');
+            if (!row.amount?.toString().trim()) missingFields.push('amount');
+
+            if (missingFields.length > 0) {
+              errors.push(`Row ${i + 2}: Missing required fields: ${missingFields.join(', ')}`);
+              failedCount++;
+              continue;
+            }
+
+            // Check if property exists
+            const property = await storage.getPropertyByNumber(row.property_number.toString().trim());
+            if (!property) {
+              errors.push(`Row ${i + 2}: Property ${row.property_number} not found`);
+              failedCount++;
+              continue;
+            }
+
+            // Check if bill already exists
+            const existing = await storage.getWaterPaymentByMonth(
+              row.property_number.toString().trim(),
+              row.payment_month.toString().trim()
+            );
+            if (existing) {
+              errors.push(`Row ${i + 2}: Bill already exists for ${row.property_number} - ${row.payment_month}`);
+              failedCount++;
+              continue;
+            }
+
+            // Create water bill
+            const billData = {
+              propertyNumber: row.property_number.toString().trim(),
+              paymentMonth: row.payment_month.toString().trim(),
+              amount: parseFloat(row.amount.toString()).toString(),
+              status: row.status?.toString().trim() || 'pending'
+            };
+
+            await storage.createWaterPayment(billData);
+            successCount++;
+          } catch (error: any) {
+            errors.push(`Row ${i + 2} (${row.property_number || 'unknown'}): ${error.message}`);
+            failedCount++;
+          }
+        }
+
+        res.json({
+          success: successCount,
+          failed: failedCount,
+          errors: errors
+        });
+
+      } else {
+        // Parse CSV
+        let csvContent = req.file.buffer.toString('utf8');
+        if (csvContent.charCodeAt(0) === 0xFEFF) {
+          csvContent = csvContent.slice(1);
+        }
+        const stream = Readable.from(csvContent);
+        
+        stream
+          .pipe(csv())
+          .on('data', (row) => {
+            results.push(row);
+          })
+          .on('end', async () => {
+            console.log('CSV parsed, total rows:', results.length);
+
+            for (let i = 0; i < results.length; i++) {
+              const row = results[i];
+              try {
+                if (!row.property_number && !row.payment_month) {
+                  continue;
+                }
+
+                const missingFields = [];
+                if (!row.property_number?.trim()) missingFields.push('property_number');
+                if (!row.payment_month?.trim()) missingFields.push('payment_month');
+                if (!row.amount?.trim()) missingFields.push('amount');
+
+                if (missingFields.length > 0) {
+                  errors.push(`Row ${i + 2}: Missing required fields: ${missingFields.join(', ')}`);
+                  failedCount++;
+                  continue;
+                }
+
+                // Check if property exists
+                const property = await storage.getPropertyByNumber(row.property_number.trim());
+                if (!property) {
+                  errors.push(`Row ${i + 2}: Property ${row.property_number} not found`);
+                  failedCount++;
+                  continue;
+                }
+
+                // Check if bill already exists
+                const existing = await storage.getWaterPaymentByMonth(
+                  row.property_number.trim(),
+                  row.payment_month.trim()
+                );
+                if (existing) {
+                  errors.push(`Row ${i + 2}: Bill already exists for ${row.property_number} - ${row.payment_month}`);
+                  failedCount++;
+                  continue;
+                }
+
+                const billData = {
+                  propertyNumber: row.property_number.trim(),
+                  paymentMonth: row.payment_month.trim(),
+                  amount: parseFloat(row.amount).toString(),
+                  status: row.status?.trim() || 'pending'
+                };
+
+                await storage.createWaterPayment(billData);
+                successCount++;
+              } catch (error: any) {
+                errors.push(`Row ${i + 2} (${row.property_number || 'unknown'}): ${error.message}`);
+                failedCount++;
+              }
+            }
+
+            res.json({
+              success: successCount,
+              failed: failedCount,
+              errors: errors
+            });
+          })
+          .on('error', (error) => {
+            console.error('CSV parsing error:', error);
+            res.status(500).json({ message: "Failed to parse CSV file" });
+          });
+      }
+
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      res.status(500).json({ 
+        message: error.message || "Failed to upload water bills" 
       });
     }
   });

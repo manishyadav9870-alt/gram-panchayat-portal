@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, XCircle, Clock, Building2, IndianRupee, Calendar, FileText } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Building2, IndianRupee, Calendar, FileText, ArrowLeft } from 'lucide-react';
 import PropertyUpload from './PropertyUpload';
+import { useLocation } from 'wouter';
 // import { useToast } from '@/hooks/use-toast';
 
 interface PropertyPayment {
@@ -35,6 +36,7 @@ interface Property {
 }
 
 export default function PropertyTaxAdmin() {
+  const [, setLocation] = useLocation();
   const [pendingPayments, setPendingPayments] = useState<PropertyPayment[]>([]);
   const [allPayments, setAllPayments] = useState<PropertyPayment[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -139,6 +141,16 @@ export default function PropertyTaxAdmin() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between mb-4">
+        <Button 
+          onClick={() => setLocation('/admin')}
+          variant="outline"
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Button>
+      </div>
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold">Property Tax Management</h2>
         <div className="flex gap-2">

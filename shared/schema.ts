@@ -295,3 +295,27 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type Property = typeof properties.$inferSelect;
 export type InsertPropertyPayment = z.infer<typeof insertPropertyPaymentSchema>;
 export type PropertyPayment = typeof propertyPayments.$inferSelect;
+
+// Water Bill Table (uses properties table as master)
+export const waterPayments = pgTable("water_payments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  propertyNumber: varchar("property_number", { length: 50 }).notNull(), // Links to properties.property_number
+  paymentMonth: varchar("payment_month", { length: 7 }).notNull(), // YYYY-MM format
+  amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+  paymentDate: date("payment_date"),
+  receiptNumber: varchar("receipt_number", { length: 50 }).unique(),
+  paymentMethod: varchar("payment_method", { length: 50 }),
+  remarks: text("remarks"),
+  status: varchar("status", { length: 20 }).default("pending"),
+  verifiedBy: varchar("verified_by", { length: 255 }),
+  verifiedAt: timestamp("verified_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWaterPaymentSchema = createInsertSchema(waterPayments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertWaterPayment = z.infer<typeof insertWaterPaymentSchema>;
+export type WaterPayment = typeof waterPayments.$inferSelect;
