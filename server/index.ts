@@ -16,15 +16,15 @@ console.log("🗄️  Database URL set:", !!process.env.DATABASE_URL);
 
 const app = express();
 
-// CORS configuration - must be before other middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://kishorgrampanchayat.in', 'https://www.kishorgrampanchayat.in']
-    : 'http://localhost:5000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// CORS configuration - only needed in development when frontend and backend are separate
+if (process.env.NODE_ENV !== 'production') {
+  app.use(cors({
+    origin: 'http://localhost:5000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }));
+}
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
@@ -46,6 +46,7 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? 'lax' : 'lax',
     },
   })
 );
