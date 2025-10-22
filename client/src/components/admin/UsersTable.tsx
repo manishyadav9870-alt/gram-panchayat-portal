@@ -19,6 +19,7 @@ interface User {
 export default function UsersTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<User | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -30,11 +31,19 @@ export default function UsersTable() {
 
   const fetchData = async () => {
     try {
+      setError(null);
       const response = await fetch('/api/admin/users');
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized: Please login as admin to view users');
+        }
+        throw new Error(`Failed to fetch users: ${response.statusText}`);
+      }
       const data = await response.json();
       setUsers(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch:', error);
+      setError(error.message || 'Failed to load users');
     } finally {
       setLoading(false);
     }
@@ -88,6 +97,8 @@ export default function UsersTable() {
   };
 
   if (loading) return <div className="text-center py-8">Loading...</div>;
+
+  if (error) return <div className="text-center py-8 text-red-600">{error}</div>;
 
   return (
     <div className="space-y-4">
