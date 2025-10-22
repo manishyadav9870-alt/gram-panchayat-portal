@@ -117,7 +117,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/auth/me", (req, res) => {
     if (req.session.userId) {
-      res.json({ username: req.session.username });
+      res.json({ 
+        username: req.session.username,
+        role: req.session.role,
+        userId: req.session.userId
+      });
     } else {
       res.status(401).json({ message: "Not authenticated" });
     }
