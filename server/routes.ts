@@ -35,12 +35,23 @@ const requireAuth = (req: Request, res: Response, next: NextFunction) => {
 
 // Admin authentication middleware
 const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  console.log('🔒 requireAdmin middleware - Session:', {
+    sessionID: req.sessionID,
+    userId: req.session.userId,
+    username: req.session.username,
+    role: req.session.role,
+    path: req.path
+  });
+  
   if (!req.session.userId) {
+    console.log('❌ No userId in session - returning 401');
     return res.status(401).json({ message: "Unauthorized" });
   }
   if (req.session.role !== "admin") {
+    console.log('❌ User role is not admin:', req.session.role, '- returning 403');
     return res.status(403).json({ message: "Forbidden: Admin access required" });
   }
+  console.log('✅ Admin access granted');
   next();
 };
 
@@ -88,14 +99,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = req.body;
+      console.log('🔐 Login attempt for username:', username);
       
       // Check user in database
       const user = await storage.getUserByUsername(username);
+      console.log('👤 User found:', user ? `${user.username} (${user.role})` : 'NOT FOUND');
       
       if (user && user.password === password) {
         // Regenerate session to prevent session fixation attacks and ensure fresh session
         req.session.regenerate((err) => {
           if (err) {
+            console.error('❌ Session regeneration failed:', err);
             return res.status(500).json({ message: "Login failed" });
           }
           
@@ -104,18 +118,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           req.session.username = user.username;
           req.session.role = user.role;
           
+          console.log('✅ Session data set:', { userId: user.id, username: user.username, role: user.role, sessionID: req.sessionID });
+          
           // Save the session before sending response
           req.session.save((err) => {
             if (err) {
+              console.error('❌ Session save failed:', err);
               return res.status(500).json({ message: "Login failed" });
             }
+            console.log('✅ Login successful, session saved');
             res.json({ message: "Login successful", username: user.username, role: user.role });
           });
         });
       } else {
+        console.log('❌ Invalid credentials');
         res.status(401).json({ message: "Invalid credentials" });
       }
     } catch (error: any) {
+      console.error('❌ Login error:', error);
       res.status(500).json({ message: error.message || "Login failed" });
     }
   });
@@ -132,6 +152,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/auth/me", (req, res) => {
+    console.log('🔍 /api/auth/me called - Session:', {
+      sessionID: req.sessionID,
+      userId: req.session.userId,
+      username: req.session.username,
+      role: req.session.role,
+      cookie: req.session.cookie
+    });
+    
     if (req.session.userId) {
       res.json({ 
         username: req.session.username,
@@ -139,6 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.session.userId
       });
     } else {
+      console.log('❌ No session found - returning 401');
       res.status(401).json({ message: "Not authenticated" });
     }
   });

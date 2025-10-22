@@ -36,26 +36,26 @@ app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')))
 
 // Session configuration
 let sessionStore;
-if (process.env.NODE_ENV === "production" && process.env.DATABASE_URL) {
-  // Use PostgreSQL session store in production
+// Use PostgreSQL session store if DATABASE_URL is available (production or staging)
+if (process.env.DATABASE_URL && !process.env.DATABASE_URL.includes('localhost')) {
   const PgSession = connectPgSimple(session);
   const pgPool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false }
   });
   sessionStore = new PgSession({
     pool: pgPool,
     tableName: 'session',
     createTableIfMissing: true,
   });
-  console.log("✅ Using PostgreSQL session store");
+  console.log("✅ Using PostgreSQL session store for persistent sessions");
 } else {
-  // Use MemoryStore in development
+  // Use MemoryStore for local development
   const MemoryStoreSession = MemoryStore(session);
   sessionStore = new MemoryStoreSession({
     checkPeriod: 86400000, // prune expired entries every 24h
   });
-  console.log("⚠️  Using MemoryStore (development only)");
+  console.log("⚠️  Using MemoryStore (local development only - sessions will be lost on restart)");
 }
 
 app.use(
