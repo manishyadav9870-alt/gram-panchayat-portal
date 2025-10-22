@@ -64,11 +64,14 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
+    name: 'connect.sid',
+    proxy: true, // Trust proxy for Railway/production
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // Set to false temporarily to test
       sameSite: 'lax',
+      path: '/',
     },
   })
 );
