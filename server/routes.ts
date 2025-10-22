@@ -21,6 +21,7 @@ declare module "express-session" {
   interface SessionData {
     userId?: string;
     username?: string;
+    role?: string;
   }
 }
 
@@ -28,6 +29,17 @@ declare module "express-session" {
 const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   if (!req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
+  }
+  next();
+};
+
+// Admin authentication middleware
+const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  if (req.session.role !== "admin") {
+    return res.status(403).json({ message: "Forbidden: Admin access required" });
   }
   next();
 };
@@ -84,7 +96,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // In production, use bcrypt.compare() for password verification
         req.session.userId = user.id;
         req.session.username = user.username;
-        res.json({ message: "Login successful", username: user.username });
+        req.session.role = user.role;
+        res.json({ message: "Login successful", username: user.username, role: user.role });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }
@@ -651,7 +664,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User Management Routes
-  app.get("/api/admin/users", requireAuth, async (req, res) => {
+  app.get("/api/admin/users", requireAdmin, async (req, res) => {
     try {
       const users = await storage.getAllUsers();
       res.json(users);
@@ -660,7 +673,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/users", requireAuth, async (req, res) => {
+  app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
       const { username, password, role } = req.body;
       const user = await storage.createUser({ username, password, role });
@@ -670,7 +683,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/admin/users/:id", requireAuth, async (req, res) => {
+  app.put("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const { username, password, role } = req.body;
       const user = await storage.updateUser(req.params.id, { username, password, role });
@@ -680,7 +693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/admin/users/:id", requireAuth, async (req, res) => {
+  app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       await storage.deleteUser(req.params.id);
       res.json({ message: "User deleted successfully" });
