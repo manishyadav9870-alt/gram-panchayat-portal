@@ -2,6 +2,8 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
+import pg from "pg";
 import cors from "cors";
 import path from "path";
 import { registerRoutes } from "./routes";
@@ -33,20 +35,40 @@ app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')));
 
 // Session configuration
-const MemoryStoreSession = MemoryStore(session);
+let sessionStore;
+if (process.env.NODE_ENV === "production" && process.env.DATABASE_URL) {
+  // Use PostgreSQL session store in production
+  const PgSession = connectPgSimple(session);
+  const pgPool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+  });
+  sessionStore = new PgSession({
+    pool: pgPool,
+    tableName: 'session',
+    createTableIfMissing: true,
+  });
+  console.log("✅ Using PostgreSQL session store");
+} else {
+  // Use MemoryStore in development
+  const MemoryStoreSession = MemoryStore(session);
+  sessionStore = new MemoryStoreSession({
+    checkPeriod: 86400000, // prune expired entries every 24h
+  });
+  console.log("⚠️  Using MemoryStore (development only)");
+}
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "gram-panchayat-secret-key-change-in-production",
     resave: false,
     saveUninitialized: false,
-    store: new MemoryStoreSession({
-      checkPeriod: 86400000, // prune expired entries every 24h
-    }),
+    store: sessionStore,
     cookie: {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? 'lax' : 'lax',
+      sameSite: 'lax',
     },
   })
 );
