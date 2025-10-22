@@ -93,11 +93,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByUsername(username);
       
       if (user && user.password === password) {
-        // In production, use bcrypt.compare() for password verification
-        req.session.userId = user.id;
-        req.session.username = user.username;
-        req.session.role = user.role;
-        res.json({ message: "Login successful", username: user.username, role: user.role });
+        // Regenerate session to prevent session fixation attacks and ensure fresh session
+        req.session.regenerate((err) => {
+          if (err) {
+            return res.status(500).json({ message: "Login failed" });
+          }
+          
+          // In production, use bcrypt.compare() for password verification
+          req.session.userId = user.id;
+          req.session.username = user.username;
+          req.session.role = user.role;
+          
+          // Save the session before sending response
+          req.session.save((err) => {
+            if (err) {
+              return res.status(500).json({ message: "Login failed" });
+            }
+            res.json({ message: "Login successful", username: user.username, role: user.role });
+          });
+        });
       } else {
         res.status(401).json({ message: "Invalid credentials" });
       }
@@ -111,6 +125,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (err) {
         return res.status(500).json({ message: "Logout failed" });
       }
+      // Clear the session cookie
+      res.clearCookie('connect.sid');
       res.json({ message: "Logout successful" });
     });
   });
@@ -125,6 +141,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } else {
       res.status(401).json({ message: "Not authenticated" });
     }
+  });
+
+  // Debug endpoint to check session
+  app.get("/api/auth/debug-session", (req, res) => {
+    res.json({
+      hasSession: !!req.session,
+      userId: req.session.userId,
+      username: req.session.username,
+      role: req.session.role,
+      sessionID: req.sessionID
+    });
   });
   // Complaint routes
   app.post("/api/complaints", async (req, res) => {
