@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import cors from "cors";
 import path from "path";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -14,6 +15,17 @@ console.log("🔧 Port:", process.env.PORT || "5000");
 console.log("🗄️  Database URL set:", !!process.env.DATABASE_URL);
 
 const app = express();
+
+// CORS configuration - must be before other middleware
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://kishorgrampanchayat.in', 'https://www.kishorgrampanchayat.in']
+    : 'http://localhost:5000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
