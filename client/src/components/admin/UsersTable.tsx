@@ -32,7 +32,9 @@ export default function UsersTable() {
   const fetchData = async () => {
     try {
       setError(null);
-      const response = await fetch('/api/admin/users');
+      const response = await fetch('/api/admin/users', {
+        credentials: 'include'
+      });
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Unauthorized: Please login as admin to view users');
@@ -70,6 +72,7 @@ export default function UsersTable() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           username: editing.username,
           password: editing.password,
@@ -89,7 +92,10 @@ export default function UsersTable() {
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+      await fetch(`/api/admin/users/${id}`, { 
+        method: 'DELETE',
+        credentials: 'include'
+      });
       await fetchData();
     } catch (error) {
       console.error('Failed to delete:', error);
